@@ -2,23 +2,27 @@ public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
 
     /* Creates an empty BST. */
     public BinarySearchTree() {
-        // TODO: YOUR CODE HERE
+        super();
     }
 
     /* Creates a BST with root as ROOT. */
     public BinarySearchTree(TreeNode root) {
-        // TODO: YOUR CODE HERE
+        super(root);
+
     }
 
     /* Returns true if the BST contains the given KEY. */
     public boolean contains(T key) {
-        // TODO: YOUR CODE HERE
-        return false;
+        if (root == null) {
+            return false;
+        } else {
+            return containsHelper(root, key);
+        }
     }
 
     /* Adds a node for KEY iff KEY isn't in the BST already. */
     public void add(T key) {
-        // TODO: YOUR CODE HERE
+        root = addHelper(root, key);
     }
 
     /* Deletes a node from the BST. */
@@ -80,5 +84,33 @@ public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
             }
         }
         return delNode.item;
+    }
+    public boolean containsHelper(TreeNode node, T key) {
+        if (key.compareTo(node.item) == 0) {
+            return true;
+        } else {
+            if (key.compareTo(node.item) < 0 && node.left != null) {
+                TreeNode anode = node.left;
+                return containsHelper(anode, key);
+            }
+            if (key.compareTo(node.item) > 0 && node.right != null) {
+                TreeNode anode = node.right;
+                return containsHelper(anode, key);
+            }
+        }
+        return false;
+    }
+
+    public TreeNode addHelper(TreeNode node, T key) {
+        if (node == null) {
+            node = new TreeNode(key);
+            return node;
+        }
+        if (key.compareTo(node.item) < 0) {
+            node.left = addHelper(node.left, key);
+        } else if (key.compareTo(node.item) > 0) {
+            node.right = addHelper(node.right, key);
+        }
+        return node;
     }
 }

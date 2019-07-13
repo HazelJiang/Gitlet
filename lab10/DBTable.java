@@ -48,7 +48,10 @@ public class DBTable<T> {
      */
     public <R extends Comparable<R>> List<T> getOrderedBy(Function<T, R> getter) {
         // TODO
-        return null;
+        List<T> newlist = new ArrayList<>(entries);
+        newlist.sort((o1, o2) -> getter.apply(o1).compareTo(getter.apply(o2)));
+        return newlist;
+
     }
 
     public static void main(String[] args) {

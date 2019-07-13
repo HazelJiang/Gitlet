@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 public class BinaryTree<T> {
 
@@ -49,7 +48,8 @@ public class BinaryTree<T> {
         int size = 0;
 
         public TreeNode(T item) {
-            this.item = item; left = right = null;
+            this.item = item;
+            left = right = null;
         }
 
         public TreeNode(T item, TreeNode left, TreeNode right) {
