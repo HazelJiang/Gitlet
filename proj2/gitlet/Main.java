@@ -8,7 +8,10 @@ public class Main {
     /* Usage: java gitlet.Main ARGS, where ARGS contains
        <COMMAND> <OPERAND> .... */
     public static void main(String... args) {
-        // TODO: YOUR CODE HERE
+        switch (args[1]) {
+            case "init":
+        }
+
     }
 
 }
