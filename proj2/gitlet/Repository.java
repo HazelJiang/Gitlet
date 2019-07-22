@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 
 public class Repository {
     private static final String repo = "refs/";
-    private static final String repoHead = "refs/head";
     private static final String objSub = "objects/";
     private static final String gitletRepo = ".gitlet";
+    private static final String index = "index";
     private File gitRepoDir;
     private File workingDir;
     private boolean isExist;
