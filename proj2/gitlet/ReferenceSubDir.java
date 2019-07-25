@@ -52,7 +52,7 @@ public class ReferenceSubDir extends OperationInDir {
     }
 
     public void remove(ReferenceInDir.ReferenceType typeName, String fileName) throws IllegalArgumentException {
-        super.remove(typeName, this.getWorkingDir() + typeName.getBaseDir() + fileName);
+        super.remove(typeName.toString(), this.getWorkingDir() + typeName.getBaseDir() + fileName);
     }
 
     public String getReferencePath(String baseDir) {
