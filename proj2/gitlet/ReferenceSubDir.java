@@ -1,77 +1,42 @@
 package gitlet;
-
-import java.io.File;
-import java.io.Serializable;
-import java.lang.ref.Reference;
+import java.io.IOException;
 import java.util.Set;
 
-public class ReferenceSubDir<T> extends OperationInDir<T>{
+public class ReferenceSubDir extends OperationInDir {
 
-    enum ReferenceType {
-        HEAD(""), BRANCH("branches/"), TAG("tags/"), NOSPECIFY("");
-        private String baseDir;
-        ReferenceType(String s) {
-            this.baseDir = s;
-        }
-        public String getBaseDir() {
-            return this.baseDir;
-        }
-    }
+
+    private ReferenceInDir.ReferenceType referenceType;
+    private String objName;
+    private ReferenceInDir refPointer;
+
     public ReferenceSubDir(String baseDir) {
         super(baseDir);
     }
 
-    public class ReferenceInDir<T> implements Serializable{
-        private static final long serialVersionUID = -7463964180111243727L;
-        private String referenceToSHAid;
-        private ReferenceType referenceType;
-        public ReferenceInDir(ReferenceType referenceObjType, String referenceTo) {
-            this.referenceType = referenceObjType;
-            this.referenceToSHAid = referenceTo;
-        }
-        /**
-         * creates a reference which targets to the referenceTo Object
-         * @param referenceObjectName
-         */
-        public ReferenceInDir(String referenceObjectName) {
-            this(ReferenceType.NOSPECIFY,sha1(referenceObjectName));
-        }
-
-        /** get the shaID, or say the object this reference refer to
-         * @return the shaID of this object.
-         */
-
-        public String getReferenceToSHAid() {
-            return this.referenceToSHAid;
-        }
-
-        /**get this reference Type, if a head, branch, or tag
-         * @return
-         */
-        public ReferenceType getReferenceType() {
-            return this.referenceType;
-        }
-
-    }
-    public void add(ReferenceType referenceType, String fileName, ReferenceInDir refPointer) {
-        super.add(referenceType.toString() + fileName, refPointer.getReferenceToSHAid());
+    public void add(ReferenceInDir.ReferenceType referenceType, String objName, ReferenceInDir refPointer) {
+        this.referenceType = referenceType;
+        this.objName = objName;
+        this.refPointer = refPointer;
+        super.add(referenceType.toString() + objName, refPointer.getReferenceToSHAid());
     }
 
-    public byte[] getFileContent(ReferenceType referenceType, String fileName)
-            throws IllegalArgumentException {
-        String fileSha = sha1(fileName);
-        Set<String> shaValue = this.AddedInSep.get(referenceType.toString() + fileName);
-        if (shaValue == null) {
-            throw new IllegalArgumentException("this reference doesn't exist");
-        }
-        for (String eachSha: shaValue) {
-            if (eachSha.equals(fileSha)) {
-                return this.serializedItem.get(fileSha);
-            }
-        }
-        return null;
+    public void add(ReferenceInDir.ReferenceType referenceType, ReferenceInDir refPointer) {
+        this.add(referenceType, referenceType.toString(), refPointer);
     }
-    public boolean contains(ReferenceType typeName, String fileName, String shaId) {
+
+    public ReferenceInDir get(ReferenceInDir.ReferenceType refer, String fileName) throws IOException, ClassNotFoundException{
+        ReferenceInDir ref = (ReferenceInDir) this.get(refer.toString(), refer.getBaseDir() + fileName);
+        if (ref == null) {
+            throw new IllegalArgumentException("no file exists");
+        }
+        return ref;
+    }
+
+    public ReferenceInDir get(ReferenceInDir.ReferenceType refer) throws IOException, ClassNotFoundException {
+        return this.get(refer, refer.getBaseDir());
+    }
+
+    public boolean contains(ReferenceInDir.ReferenceType typeName, String fileName, String shaId) {
         Set<String> shaValue = this.AddedInSep.get(typeName.toString() + fileName);
         if (shaValue != null) {
             for (String sha : shaValue) {
@@ -82,11 +47,20 @@ public class ReferenceSubDir<T> extends OperationInDir<T>{
         }
         return false;
     }
-    public boolean contains(ReferenceType typeName, String fileName){
+    public boolean contains(ReferenceInDir.ReferenceType typeName, String fileName){
         return this.contains(typeName, fileName, sha1(fileName));
     }
 
-    public void remove(ReferenceType typeName, String fileName) throws IllegalArgumentException {
-        super.remove(this.getWorkingDir() + typeName.getBaseDir() + fileName);
+    public void remove(ReferenceInDir.ReferenceType typeName, String fileName) throws IllegalArgumentException {
+        super.remove(typeName, this.getWorkingDir() + typeName.getBaseDir() + fileName);
+    }
+
+    public String getReferencePath(String baseDir) {
+        String path = this.getWorkingDir().getAbsolutePath() + this.referenceType.toString();
+        return path;
+    }
+
+    public ReferenceInDir.ReferenceType getReferenceType() {
+        return this.referenceType;
     }
 }

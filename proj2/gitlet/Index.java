@@ -95,6 +95,14 @@ public class Index extends Utils implements Serializable {
         return removeStage.size() != addStage.size();
     }
 
+    public HashMap<String, String> getBlob() {
+        return this.blob;
+    }
+
+    public TreeMap<String, String> getAddStaged() {
+        return this.addStage;
+    }
+
 
 
     /*add();

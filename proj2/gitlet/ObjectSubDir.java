@@ -1,12 +1,6 @@
 package gitlet;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.file.Path;
-
-
-public class ObjectSubDir<T> extends OperationInDir<T> {
+public class ObjectSubDir extends OperationInDir {
 
     private static final int seperate = 2;
     enum ObjectItem {
@@ -17,25 +11,6 @@ public class ObjectSubDir<T> extends OperationInDir<T> {
         }
     }
 
-    public class ObjectInDir implements Serializable {
-        private static final long serialVersionUID = -1843757570228076096L;
-        @Override
-        public int hashCode() {
-            return Utils.sha1(this).hashCode();
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (this.getClass() != obj.getClass()) {
-                return false;
-            }
-            ObjectInDir other = (ObjectInDir) obj;
-
-            return Utils.sha1(this).equals(Utils.sha1(other));
-        }
-    }
 
 
     /** construct a object subdirectory in the gitlet repo
@@ -44,14 +19,6 @@ public class ObjectSubDir<T> extends OperationInDir<T> {
     public ObjectSubDir(String file) {
         super(file);
 
-    }
-    @Override
-    public byte[] getFileContent(String filePath)throws IllegalArgumentException {
-        return super.getFileContent(getShaValueFromPath(filePath));
-    }
-    @Override
-    public byte[] getFileContent(String className, String filePath) throws IllegalArgumentException {
-        return super.getFileContent(className, getShaValueFromPath(filePath));
     }
 
     @Override
@@ -63,27 +30,26 @@ public class ObjectSubDir<T> extends OperationInDir<T> {
         return super.contains(className, getShaValueFromPath(filePath));
     }
     @Override
-    public void remove(String filePath) {
-        super.remove(getShaValueFromPath(filePath));
+    public void remove(String objType, String filePath) {
+        super.remove(objType, getShaValueFromPath(filePath));
     }
 
     /**
      * This method push an gitVersion Object to the ObjectSubDir
      * @param obj
-     * @param <S>
      * @return
      */
-    public <S extends T> String push(GitVersion obj) {
-        String sha = obj.sha1();
+    public String push(ObjectInDir obj) {
+        String sha = sha1(obj);
         if (!this.contains(sha)) {
-            this.add((S)makeSubDir(sha), sha);
+            this.add((makeSubDir(sha)), sha);
         }
         return sha;
     }
 
 
     private static String makeSubDir(String sha) {
-        return sha.substring(0, seperate) + "/" + sha.substring(seperate, sha.length());
+        return sha.substring(0, seperate) + "/" + sha.substring(seperate);
     }
 
     private static String getShaValueFromPath(String filePath) {

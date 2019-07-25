@@ -8,19 +8,13 @@ import java.io.Serializable;
  private void readObjectNoData()
      throws ObjectStreamException; */
 
-public class GitVersion extends Utils implements Serializable {
-
-    //private final String refBranch = "refs/branchs";
-    public GitVersion() {
-        Commit instance = new Commit("initial commit");
-        Branch newbranch = new Branch("master");
-        newbranch.setPointer(instance);
+public class ObjectInDir implements Serializable {
+    private static final long serialVersionUID = -1843757570228076096L;
+    @Override
+    public int hashCode() {
+        return Utils.sha1(this).hashCode();
     }
-
-    public String CommitID() {
-        return sha1(this);
-    }
-
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -28,7 +22,8 @@ public class GitVersion extends Utils implements Serializable {
         if (this.getClass() != obj.getClass()) {
             return false;
         }
-        GitVersion other = (GitVersion) obj;
-        return sha1(other).equals(sha1(this));
+        ObjectInDir other = (ObjectInDir) obj;
+
+        return Utils.sha1(this).equals(Utils.sha1(other));
     }
 }
