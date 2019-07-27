@@ -3,7 +3,6 @@ package gitlet;
 import java.io.Serializable;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 /*private void writeObject(java.io.ObjectOutputStream out)
      throws IOException
  private void readObject(java.io.ObjectInputStream in)

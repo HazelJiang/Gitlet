@@ -50,7 +50,7 @@ public class Commit extends ObjectInDir {
             blobs.put(entry.getKey(), entry.getValue());
         }
         for (String fileName: index.getRemoveStage()) {
-            if (! blobs.containsKey(fileName)) {
+            if (!blobs.containsKey(fileName)) {
                 continue;
             }
             blobs.remove(fileName);
@@ -69,7 +69,7 @@ public class Commit extends ObjectInDir {
         return this.blobs.containsKey(fileName);
     }
 
-    public boolean containsValue (String fileContentShaID) {
+    public boolean containsValue(String fileContentShaID) {
         return this.blobs.containsValue(fileContentShaID);
     }
 
@@ -115,13 +115,17 @@ public class Commit extends ObjectInDir {
         this.blobs.clear();
     }
 
-    public HashMap<String, String> getBlob() { return this.blobs; }
+    public HashMap<String, String> getBlob() {
+        return this.blobs;
+    }
 
     public String getClassName() {
         return "Commit";
     }
 
-    public String getParent() { return this.parent; }
+    public String getParent() {
+        return this.parent;
+    }
 
     public String getMessage() { return this.message; }
 
@@ -137,14 +141,14 @@ public class Commit extends ObjectInDir {
     }
 
     public String sha() {
-        String SHA = message;
-        SHA += time.toString();
+        String sha = message;
+        sha += time.toString();
         ArrayList<String> shas = new ArrayList(blobs.values());
         Collections.sort(shas);
         for (String fileSHA: shas) {
-            SHA += fileSHA;
+            sha += fileSHA;
         }
-        return Utils.sha1(SHA);
+        return Utils.sha1(sha);
     }
 
 }

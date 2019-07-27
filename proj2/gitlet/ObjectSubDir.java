@@ -1,8 +1,13 @@
 package gitlet;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class that manages the Object subdirectory. Main function is to store and get serializable objects with SHA codes.
@@ -14,7 +19,7 @@ public class ObjectSubDir {
     // All contained SHA codes in the directory
     private Set<String> shaCodes;
 
-    public ObjectSubDir() {}
+    public ObjectSubDir() { }
 
     /**
      * Constructor that takes the object directory as parameter and reads all available SHA Codes from the directory
@@ -38,18 +43,18 @@ public class ObjectSubDir {
      * Add an object in the directory using SHA code
      * @param object the serializable and SHA object to add
      */
-    public void add(ObjectInDir object) throws IOException {
+    public void add(gitlet.ObjectInDir object) throws IOException {
         String objectSHA = object.sha();
         if (shaCodes.contains(objectSHA)) {
             throw new RuntimeException("There's either a SHA collision or you're adding a existing item.");
         }
         String shaHead = objectSHA.substring(0, 2);
         String shaTail = objectSHA.substring(2);
-        File shaFileFolder = Utils.join(objDir, shaHead);
+        File shaFileFolder = gitlet.Utils.join(objDir, shaHead);
         if (!shaFileFolder.exists()) {
             shaFileFolder.mkdirs();
         }
-        File shaFile = Utils.join(objDir, shaHead, shaTail);
+        File shaFile = gitlet.Utils.join(objDir, shaHead, shaTail);
         shaFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(shaFile);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -90,7 +95,8 @@ public class ObjectSubDir {
             if (shaHeadFolder.isDirectory()) {
                 String shaHead = shaHeadFolder.getName();
                 if (shaHead.length() != SHACUT) {
-                    throw new RuntimeException("There is a folder that does not satisfy the sha requirement!");
+                    throw new RuntimeException("There is a folder " +
+                            "that does not satisfy the sha requirement!");
                 }
                 for (File shaFile: shaHeadFolder.listFiles()) {
                     shaCodes.add(shaHead + shaFile.getName());

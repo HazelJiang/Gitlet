@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 /**
- * Class to deal with operations in the "refs" directory. Main function is setting heads of branches.
- * We would simply store the heads in the "refs" directory rather than the "refs/heads" for simplicity because there
+ * Class to deal with operations in the "refs" directory.
+ * Main function is setting heads of branches.
+ * We would simply store the heads in the "refs" directory rather
+ * than the "refs/heads" for simplicity because there
  * are no other functions in gitlet.
  */
 public class ReferenceDir {
@@ -43,7 +45,8 @@ public class ReferenceDir {
     }
 
     /**
-     * Read the names of the existing heads in the "refs" directory and their corresponding head commit SHA code.
+     * Read the names of the existing heads in the "refs" directory
+     * and their corresponding head commit SHA code.
      */
     private void readHeads() throws FileNotFoundException {
         for (File head: refDir.listFiles()) {
@@ -103,9 +106,10 @@ public class ReferenceDir {
         removingHead.delete();
     }
 
-    public void setHead(String branch, String headCommit) throws FileNotFoundException, IOException {
+    public void setHead(String branch, String headCommit) throws IOException {
         if (!heads.containsKey(branch)) {
-            throw new RuntimeException("Setting the head of a non-existent branch.");
+            throw new RuntimeException("Setting " +
+                    "the head of a non-existent branch.");
         }
         heads.put(branch, headCommit);
         File newHead = Utils.join(refDir, branch);

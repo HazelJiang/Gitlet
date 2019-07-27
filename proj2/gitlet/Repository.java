@@ -1,17 +1,18 @@
 package gitlet;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.*;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Scanner;
+
 
 
 public class Repository extends OperationInDir {
-    private static final String repo = "refs";
-    private static final String objSub = "objects";
-    private static final String gitletRepo = ".gitlet";
-    private static final String indexFileName = "index";
+    private static final String REPO = "refs";
+    private static final String OBJSUB = "objects";
+    private static final String GITLETREPO = ".gitlet";
+    private static final String INDEXFILENAME = "index";
     // Class to deal with issues in the ".gitlet/refs" directory
     private ReferenceDir referenceDir;
     // Class to deal with issues in the ".gitlet/objects" directory
@@ -31,7 +32,6 @@ public class Repository extends OperationInDir {
     public Index getIndex() {
         return index;
     }
-
 
     public static Date getCurrentTime() {
         return new Date();
@@ -54,14 +54,14 @@ public class Repository extends OperationInDir {
     public Repository(String currentDir) throws IOException, ClassNotFoundException {
         super(Paths.get(currentDir).toString());
         String currentDirPath = this.getWorkingDir().getAbsolutePath();
-        this.gitDir = Paths.get(currentDirPath).resolve(gitletRepo).toFile();
+        this.gitDir = Paths.get(currentDirPath).resolve(GITLETREPO).toFile();
         if (gitDir.exists()) {
             initialized = true;
             // ".gitlet/refs"
-            String referenceDirPath = Paths.get(gitDir.getAbsolutePath()).resolve(repo).toString();
+            String referenceDirPath = Paths.get(gitDir.getAbsolutePath()).resolve(REPO).toString();
             this.referenceDir = new ReferenceDir(referenceDirPath);
             //".gitlet/objects"
-            String objectDirPath = Paths.get(gitDir.getAbsolutePath()).resolve(objSub).toString();
+            String objectDirPath = Paths.get(gitDir.getAbsolutePath()).resolve(OBJSUB).toString();
             this.objectDir = new ObjectSubDir(objectDirPath);
             File headFile = Utils.join(gitDir.getAbsolutePath(), "HEAD");
             Scanner headFileScanner = new Scanner(headFile);
@@ -90,9 +90,9 @@ public class Repository extends OperationInDir {
             String initialCommit = "initial commit";
             // create directories
             gitDir.mkdirs();
-            File refDir = Utils.join(gitDir.getAbsolutePath(), repo);
+            File refDir = Utils.join(gitDir.getAbsolutePath(), REPO);
             refDir.mkdirs();
-            File objDir = Utils.join(gitDir.getAbsolutePath(), objSub);
+            File objDir = Utils.join(gitDir.getAbsolutePath(), OBJSUB);
             objDir.mkdirs();
             // Create Objects for these directories
             objectDir = new ObjectSubDir(objDir.getAbsolutePath());
@@ -128,7 +128,8 @@ public class Repository extends OperationInDir {
         byte[] fileContent = fis.readAllBytes();
         Blob fileBlob = new Blob(fileContent);
         /**
-         * If the File is Indentical to the file in the current commit, don't do anything.
+         * If the File is Indentical to the file in the current commit,
+         * don't do anything.
          */
         if (currentCommit.containsFile(fileName)) {
             String oldFileSHA = currentCommit.get(fileName);
@@ -163,12 +164,16 @@ public class Repository extends OperationInDir {
     }
 
     /**
-     * Untrack the file; that is, indicate (somewhere in the .gitlet directory) that it is not to be included in the
-     * next commit, even if it is tracked in the current commit (the current commit will eventually become the next
+     * Untrack the file; that is, indicate (somewhere in the .gitlet directory)
+     * That it is not to be included in the.
+     * next commit, even if it is tracked in the current commit.
+     * (the current commit will eventually become the next.
      * commit’s parent). This command breaks down as follows:
-     * If the file is tracked by the current commit, delete the file from the working directory, unstage it if
+     * If the file is tracked by the current commit,
+     * delete the file from the working directory, unstage it if.
      * it was staged, and mark the file to be untracked by the next commit.
-     * If the file isn’t tracked by the current commit but it is staged, unstage the file and do nothing else
+     * If the file isn’t tracked by the current commit but it is staged,
+     * unstage the file and do nothing else.
      * (don’t remove the file!).
      * @param fileName the file to be removed
      */
@@ -222,8 +227,10 @@ public class Repository extends OperationInDir {
     }
 
     /**
-     * Displays what branches currently exist, and marks the current branch with a *. Also displays what files have
-     * been staged or marked for untracking. An example of the exact format it should follow is as follows.
+     * Displays what branches currently exist, and marks the current branch with a *.
+     * Also displays what files have.
+     * been staged or marked for untracking.
+     * An example of the exact format it should follow is as follows.
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -263,7 +270,8 @@ public class Repository extends OperationInDir {
         Set<String> trackedFiles = tempCommit.getBlob().keySet();
         Set<String> untrackedFiles = new HashSet<>();
         /**
-         * Untracked files: files that are in the current working directory but not in the stage or commit.
+         * Untracked files:
+         * files that are in the current working directory but not in the stage or commit.
          */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
@@ -273,7 +281,8 @@ public class Repository extends OperationInDir {
         Set<String> deletedFiles = new HashSet<>();
         Set<String> bothExist = new HashSet<>();
         /**
-         * Deleted files: files that are tracked or commited but not found in the current directory.
+         * Deleted files:
+         * files that are tracked or commited but not found in the current directory.
          */
         for (String s: trackedFiles) {
             if (!currentFilesSet.contains(s)) {
@@ -283,7 +292,8 @@ public class Repository extends OperationInDir {
             }
         }
         /**
-         * Modified files: files that exists in both the working directory and the new commit but different.
+         * Modified files:
+         * files that exists in both the working directory and the new commit but different.
          */
         Set<String> modifiedFiles = new HashSet<>();
         for (String fileName: bothExist) {
@@ -411,7 +421,8 @@ public class Repository extends OperationInDir {
         }
         Set<String> trackedFiles = tempCommit.getBlob().keySet();
         /**
-         * Untracked files: files that are in the current working directory but not in the stage or commit.
+         * Untracked files:
+         * files that are in the current working directory but not in the stage or commit.
          */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
@@ -601,7 +612,7 @@ public class Repository extends OperationInDir {
      * @throws IOException
      */
     private void writeIndex() throws IOException {
-        File indexFile = Utils.join(gitDir, indexFileName);
+        File indexFile = Utils.join(gitDir, INDEXFILENAME);
         if (!indexFile.exists()) {
             indexFile.createNewFile();
         }
@@ -616,7 +627,7 @@ public class Repository extends OperationInDir {
      * @throws ClassNotFoundException
      */
     private void readIndex() throws IOException, ClassNotFoundException {
-        File indexFile = Utils.join(gitDir, indexFileName);
+        File indexFile = Utils.join(gitDir, INDEXFILENAME);
         if (!indexFile.exists()) {
             throw new FileNotFoundException("The index file does not exist!");
         }

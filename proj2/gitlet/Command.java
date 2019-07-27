@@ -3,12 +3,6 @@ package gitlet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-
 public class Command {
 
     public static class InitCommand {
@@ -25,13 +19,14 @@ public class Command {
     }
 
     public static class AddCommand {
-        public static void callAdd(Repository repo, String[] args) throws IOException, ClassNotFoundException {
+        public static void callAdd(Repository repo, String[] args) throws IOException,
+                ClassNotFoundException {
             String fileName = args[1];
             File workingDir = repo.getWorkingDir();
             File addFile = Utils.join(workingDir.getAbsolutePath(), fileName);
             try {
                 repo.addFile(addFile);
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -43,7 +38,8 @@ public class Command {
 
     public static class CommitCommand {
 
-        public static void callCommit(Repository repo, String[] args) throws IOException, ClassNotFoundException {
+        public static void callCommit(Repository repo, String[] args) throws IOException,
+                ClassNotFoundException {
             Index index = repo.getIndex();
             if (args.length < 2) {
                 System.out.println("Please enter a commit message.");
@@ -67,7 +63,8 @@ public class Command {
     }
 
     public static class RmCommand {
-        public static void callrm(Repository repo, String[] args) throws Exception, IOException, ClassNotFoundException {
+        public static void callrm(Repository repo, String[] args) throws Exception, IOException,
+                ClassNotFoundException {
             if (args.length < 2) {
                 System.out.println("Please enter a remove message.");
                 return;
@@ -85,7 +82,8 @@ public class Command {
     }
 
     public static class LogCommand {
-        public static void callLog(Repository repo, String[] args) throws IOException, ClassNotFoundException {
+        public static void callLog(Repository repo, String[] args) throws IOException,
+                ClassNotFoundException {
             repo.log();
         }
 
@@ -95,7 +93,8 @@ public class Command {
     }
 
     public static class GlobalLogCommand {
-        public static void callGloballog(Repository repo, String[] args) throws IOException, ClassNotFoundException {
+        public static void callGloballog(Repository repo, String[] args) throws IOException,
+                ClassNotFoundException {
             repo.globalLog();
         }
         public static boolean correctInput(String[] args) {
@@ -105,7 +104,8 @@ public class Command {
 
     public static class StatusCommand {
 
-        public static void callStatus(Repository repo, String[] args) throws IOException, ClassNotFoundException {
+        public static void callStatus(Repository repo, String[] args) throws IOException,
+                ClassNotFoundException {
             repo.status();
         }
         public static boolean correctInput(String[] args) {
@@ -170,7 +170,8 @@ public class Command {
     public static class ResetCommand {
         public static void callReset(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for reset. Usage: java gitlet.Main reset [commit id]");
+                System.out.println("Invalid argument for reset. Usage: " +
+                        "java gitlet.Main reset [commit id]");
             }
             try {
                 repo.reset(args[1], true);
@@ -183,7 +184,8 @@ public class Command {
     public static class MergeCommand {
         public static void callMerge(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for merge. Usage: java gitlet.Main merge [branch name]");
+                System.out.println("Invalid argument for merge. Usage: " +
+                        "java gitlet.Main merge [branch name]");
             }
             try {
                 repo.merge(args[1]);

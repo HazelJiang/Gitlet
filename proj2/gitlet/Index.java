@@ -1,18 +1,15 @@
 package gitlet;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Set;
-import java.io.File;
-import java.util.Date;
 import java.util.HashSet;
 
 public class Index extends Utils implements Serializable {
     private static final long serialVersionUID = -8339216273921535654L;
-
     /**
-     * The actual stage area we use to add items to the stage area, and the key is the objectName for ob
+     * The actual stage area we use to add items to the stage area, and the key is the.
+     * objectName for ob
      * and the value is the shaID for this object, based on the content of the obj
      */
     private TreeMap<String, String> addStage;
