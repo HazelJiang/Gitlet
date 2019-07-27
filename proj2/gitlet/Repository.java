@@ -239,8 +239,7 @@ public class Repository extends OperationInDir {
         for (String branchEnumeration: referenceDir.getHeads().keySet()) {
             if (branch.equals(branchEnumeration)) {
                 System.out.println("*" + branchEnumeration);
-            }
-            else {
+            } else {
                 System.out.println(branchEnumeration);
             }
         }
@@ -318,6 +317,7 @@ public class Repository extends OperationInDir {
         for (String untrackedFile: untrackedFiles) {
             System.out.println(untrackedFile);
         }
+        System.out.println();
     }
 
     /**
