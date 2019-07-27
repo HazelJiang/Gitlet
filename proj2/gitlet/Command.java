@@ -85,6 +85,33 @@ public class Command {
         }
     }
 
+    public static class FindCommand {
+        public static void callFind(Repository repo, String[] args) throws IOException, ClassNotFoundException {
+            if (args.length < 2) {
+                System.out.println("Please enter a find message.");
+                return;
+            }
+            if (args[1].equals(" ")) {
+                System.out.println("Found no commit with that message.");
+                return;
+            }
+            String commitMessgae = args[1];
+            Commit currentCommit = repo.getCurrentCommit();
+            int count = 0;
+            while (currentCommit.getParent() != null) {
+                String thisMessage = currentCommit.getMessage();
+                if (commitMessgae.equals(thisMessage)) {
+                    System.out.println(currentCommit.sha());
+                    count++;
+                }
+                currentCommit = currentCommit.getParentCommit(repo);
+            }
+            if (count == 0) {
+                throw new IllegalArgumentException("Found no commit with that message.");
+            }
+        }
+    }
+
     public static class LogCommand {
         public static void callLog(Repository repo, String[] args) throws IOException,
                 ClassNotFoundException {
