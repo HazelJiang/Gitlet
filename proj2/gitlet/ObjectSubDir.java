@@ -45,9 +45,9 @@ public class ObjectSubDir {
      */
     public void add(gitlet.ObjectInDir object) throws IOException {
         String objectSHA = object.sha();
-        if (shaCodes.contains(objectSHA)) {
+        /*if (shaCodes.contains(objectSHA)) {
             throw new RuntimeException("There's either a SHA collision or you're adding a existing item.");
-        }
+        }*/
         String shaHead = objectSHA.substring(0, 2);
         String shaTail = objectSHA.substring(2);
         File shaFileFolder = gitlet.Utils.join(objDir, shaHead);

@@ -57,6 +57,7 @@ public class Repository extends OperationInDir {
         this.gitDir = Paths.get(currentDirPath).resolve(GITLETREPO).toFile();
         if (gitDir.exists()) {
             initialized = true;
+        } else {
             // ".gitlet/refs"
             String referenceDirPath = Paths.get(gitDir.getAbsolutePath()).resolve(REPO).toString();
             this.referenceDir = new ReferenceDir(referenceDirPath);
