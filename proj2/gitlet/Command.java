@@ -100,7 +100,7 @@ public class Command {
             int count = 0;
             while (currentCommit.getParent() != null) {
                 String thisMessage = currentCommit.getMessage();
-                if (commitMessgae.equals(thisMessage)) {
+                if (commitMessgae.equals(" + thisMessage + ")) {
                     System.out.println(currentCommit.sha());
                     count++;
                 }
