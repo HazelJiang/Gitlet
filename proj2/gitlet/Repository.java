@@ -78,7 +78,7 @@ public class Repository extends OperationInDir {
             File indexFile = Utils.join(gitDir, "index");
             FileInputStream fis = new FileInputStream(indexFile);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            index = (Index)ois.readObject();
+            index = (Index) ois.readObject();
         }
     }
 
@@ -129,7 +129,7 @@ public class Repository extends OperationInDir {
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new FileNotFoundException("File does not exist.");
         }
         byte[] fileContent = fis.readAllBytes();
@@ -220,7 +220,7 @@ public class Repository extends OperationInDir {
      */
     public void globalLog() throws IOException, ClassNotFoundException {
         Set<String> loggedCommits = new HashSet<>();
-        for(String sha: referenceDir.getHeads().values()) {
+        for (String sha: referenceDir.getHeads().values()) {
             Commit c = (Commit) objectDir.get(sha);
             while (c != null) {
                 if (loggedCommits.contains(c.sha())) {
@@ -276,10 +276,6 @@ public class Repository extends OperationInDir {
         }
         Set<String> trackedFiles = tempCommit.getBlob().keySet();
         Set<String> untrackedFiles = new HashSet<>();
-        /**
-         * Untracked files:
-         * files that are in the current working directory but not in the stage or commit.
-         */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
                 untrackedFiles.add(s);
@@ -287,10 +283,6 @@ public class Repository extends OperationInDir {
         }
         Set<String> deletedFiles = new HashSet<>();
         Set<String> bothExist = new HashSet<>();
-        /**
-         * Deleted files:
-         * files that are tracked or commited but not found in the current directory.
-         */
         for (String s: trackedFiles) {
             if (!currentFilesSet.contains(s)) {
                 deletedFiles.add(s);
@@ -298,10 +290,6 @@ public class Repository extends OperationInDir {
                 bothExist.add(s);
             }
         }
-        /**
-         * Modified files:
-         * files that exists in both the working directory and the new commit but different.
-         */
         Set<String> modifiedFiles = new HashSet<>();
         for (String fileName: bothExist) {
             String sha1 = tempCommit.get(fileName);
@@ -460,7 +448,8 @@ public class Repository extends OperationInDir {
          */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new IllegalArgumentException("There is an untracked file in the way; delete it or add it first.");
+                throw new IllegalArgumentException("There is an "
+                        + "untracked file in the way; delete it or add it first.");
             }
         }
         /**
@@ -536,7 +525,8 @@ public class Repository extends OperationInDir {
         Set<String> untrackedFiles = new HashSet<>();
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new IllegalArgumentException("There is an untracked file in the way; delete it or add it first.");
+                throw new IllegalArgumentException("There is an untracked file "
+                        + "in the way; delete it or add it first.");
             }
         }
         Set<String> allParentCommits = new HashSet<>();
@@ -575,10 +565,12 @@ public class Repository extends OperationInDir {
             if (!otherBranchCommit.containsFile(fileName)) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
-            if (currentCommit.containsFile(fileName) && !c.get(fileName).equals(currentCommit.get(fileName))) {
+            if (currentCommit.containsFile(fileName)
+                    && !c.get(fileName).equals(currentCommit.get(fileName))) {
                 modifiedFilesInCurrentCommit.add(fileName);
             }
-            if (otherBranchCommit.containsFile(fileName) && !c.get(fileName).equals(otherBranchCommit.get(fileName))) {
+            if (otherBranchCommit.containsFile(fileName)
+                    && !c.get(fileName).equals(otherBranchCommit.get(fileName))) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
         }
@@ -599,7 +591,8 @@ public class Repository extends OperationInDir {
                 continue;
             }
             else {
-                if (!currentCommit.containsFile(fileName) && !otherBranchCommit.containsFile(fileName)) {
+                if (!currentCommit.containsFile(fileName)
+                        && !otherBranchCommit.containsFile(fileName)) {
                     continue;
                 }
                 if (!currentCommit.containsFile(fileName)) {
@@ -631,7 +624,8 @@ public class Repository extends OperationInDir {
         }
     }
 
-    private void conflictOutput(String fileName, Commit currentCommit, Commit otherCommit) throws IOException, ClassNotFoundException {
+    private void conflictOutput(String fileName, Commit currentCommit, Commit otherCommit)
+            throws IOException, ClassNotFoundException {
         File f = Utils.join(getWorkingDir(), fileName);
         if (!f.exists()) {
             f.createNewFile();

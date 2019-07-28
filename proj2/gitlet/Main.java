@@ -34,8 +34,7 @@ public class Main {
             System.out.println("No command with that name exists.");
             return;
         }
-
-        if (args.length < 0 || args.length > 4) {
+        if (args.length < 0) {
             throw new IllegalArgumentException("Incorrect operands.");
         }
         Repository repository = new Repository(System.getProperty("user.dir"));
