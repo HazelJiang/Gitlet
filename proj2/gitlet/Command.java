@@ -45,6 +45,10 @@ public class Command {
                 System.out.println("Please enter a commit message.");
                 return;
             }
+            if (args[1].equals(" ")) {
+                System.out.println("Please enter a commit message.");
+                return;
+            }
             String message = args[1];
             if (index.getAddStage().size() == 0 && index.getRemoveStage().size() == 0) {
                 System.out.println("No changes added to the commit.");
@@ -87,13 +91,23 @@ public class Command {
                 System.out.println("Please enter a find message.");
                 return;
             }
+            if (args[1].equals(" ")) {
+                System.out.println("Found no commit with that message.");
+                return;
+            }
             String commitMessgae = args[1];
-            try {
-                repo.find(commitMessgae);
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            } catch (ClassNotFoundException e) {
-                System.out.println(e.getMessage());
+            Commit currentCommit = repo.getCurrentCommit();
+            int count = 0;
+            while (currentCommit.getParent() != null) {
+                String thisMessage = currentCommit.getMessage();
+                if (commitMessgae.equals(" + thisMessage + ")) {
+                    System.out.println(currentCommit.sha());
+                    count++;
+                }
+                currentCommit = currentCommit.getParentCommit(repo);
+            }
+            if (count == 0) {
+                throw new IllegalArgumentException("Found no commit with that message.");
             }
         }
     }

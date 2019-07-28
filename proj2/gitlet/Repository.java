@@ -225,6 +225,21 @@ public class Repository extends OperationInDir {
             }
         }
     }
+    public void find(String messgae) throws IOException, ClassNotFoundException {
+        final int[] count = new int[] { 0 };
+        Commit c = currentCommit;
+        while (c != null) {
+            if (c.getMessage().equals(messgae)) {
+                count[0]++;
+                System.out.println(c.sha());
+            }
+            c = c.getParentCommit(this);
+        }
+        if (count[0] == 0) {
+            throw new IllegalArgumentException(
+                    "Found no commit with that message.");
+        }
+    }
 
     /**
      * Displays what branches currently exist, and marks the current branch with a *.
@@ -457,21 +472,6 @@ public class Repository extends OperationInDir {
         }
 
         currentCommit = desiredCommit;
-    }
-    public void find(String messgae) throws IOException, ClassNotFoundException {
-        final int[] count = new int[] { 0 };
-        Commit c = currentCommit;
-        while (c != null) {
-            if (c.getMessage().equals(messgae)) {
-                count[0]++;
-                System.out.println(c.sha());
-            }
-            c = c.getParentCommit(this);
-        }
-        if (count[0] == 0) {
-            throw new IllegalArgumentException(
-                    "Found no commit with that message.");
-        }
     }
 
     public void merge(String branchName) throws Exception {
