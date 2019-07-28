@@ -1,10 +1,17 @@
 package gitlet;
-import java.io.*;
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Scanner;
+import java.io.ObjectInputStream;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.FileNotFoundException;
+
 
 
 
@@ -647,11 +654,11 @@ public class Repository extends OperationInDir {
         FileOutputStream fos = new FileOutputStream(f);
         fos.write("<<<<<<< HEAD\n".getBytes());
         if (currentCommit.containsFile(fileName)) {
-            fos.write(((Blob)(objectDir.get(currentCommit.get(fileName)))).getBlobContent());
+            fos.write(((Blob) (objectDir.get(currentCommit.get(fileName)))).getBlobContent());
         }
         fos.write("=======\n".getBytes());
         if (otherCommit.containsFile(fileName)) {
-            fos.write(((Blob)(objectDir.get(otherCommit.get(fileName)))).getBlobContent());
+            fos.write(((Blob) (objectDir.get(otherCommit.get(fileName)))).getBlobContent());
         }
         fos.write(">>>>>>>".getBytes());
     }

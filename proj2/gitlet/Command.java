@@ -1,7 +1,6 @@
 package gitlet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 public class Command {
 
@@ -171,8 +170,8 @@ public class Command {
     public static class ResetCommand {
         public static void callReset(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for reset. Usage: " +
-                        "java gitlet.Main reset [commit id]");
+                System.out.println("Invalid argument for reset. Usage: "
+                        + "java gitlet.Main reset [commit id]");
             }
             try {
                 repo.reset(args[1], true);
@@ -185,8 +184,8 @@ public class Command {
     public static class MergeCommand {
         public static void callMerge(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for merge. Usage: " +
-                        "java gitlet.Main merge [branch name]");
+                System.out.println("Invalid argument for merge. Usage: "
+                        + "java gitlet.Main merge [branch name]");
             }
             try {
                 repo.merge(args[1]);

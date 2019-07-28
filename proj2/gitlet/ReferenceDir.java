@@ -108,8 +108,8 @@ public class ReferenceDir {
 
     public void setHead(String branch, String headCommit) throws IOException {
         if (!heads.containsKey(branch)) {
-            throw new RuntimeException("Setting " +
-                    "the head of a non-existent branch.");
+            throw new RuntimeException("Setting "
+                     + "the head of a non-existent branch.");
         }
         heads.put(branch, headCommit);
         File newHead = Utils.join(refDir, branch);
