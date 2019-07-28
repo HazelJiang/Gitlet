@@ -594,9 +594,9 @@ public class Repository extends OperationInDir {
                         traceFile = c;
                     }
                     c = c.getParentCommit(this);
-                    if (traceFile != otherCommit) {
-                        checkoutFileWithCommit(fileName, traceFile.sha());
-                    }
+                }
+                if (traceFile != otherCommit) {
+                    checkoutFileWithCommit(fileName, traceFile.sha());
                 }
             }
         }
