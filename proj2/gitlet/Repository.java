@@ -220,7 +220,6 @@ public class Repository extends OperationInDir {
                 }
                 System.out.println(c);
                 System.out.println();
-                System.out.println();
                 loggedCommits.add(c.sha());
                 c = c.getParentCommit(this);
             }
