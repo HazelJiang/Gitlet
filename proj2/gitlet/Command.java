@@ -42,10 +42,10 @@ public class Command {
                 ClassNotFoundException {
             Index index = repo.getIndex();
             if (args.length < 2) {
-                System.out.println("Please enter a commit message.");
+                System.out.println("Incorrect operands");
                 return;
             }
-            if (args[1].equals(" ")) {
+            if (args[1].equals("")) {
                 System.out.println("Please enter a commit message.");
                 return;
             }
@@ -67,7 +67,7 @@ public class Command {
     }
 
     public static class RmCommand {
-        public static void callrm(Repository repo, String[] args) throws Exception, IOException,
+        public static void callrm(Repository repo, String[] args) throws IOException,
                 ClassNotFoundException {
             if (args.length < 2) {
                 System.out.println("Please enter a remove message.");
