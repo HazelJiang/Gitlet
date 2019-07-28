@@ -1,6 +1,5 @@
 package gitlet;
 
-import java.io.IOException;
 import java.util.ArrayList;
 /* Driver class for Gitlet, the tiny stupid version-control system.
    @author
@@ -34,7 +33,8 @@ public class Main {
             System.out.println("No command with that name exists.");
             return;
         }
-        if (args.length < 0) {
+
+        if (args.length < 0 || args.length > 4) {
             throw new IllegalArgumentException("Incorrect operands.");
         }
         Repository repository = new Repository(System.getProperty("user.dir"));

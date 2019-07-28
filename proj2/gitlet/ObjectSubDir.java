@@ -10,8 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A class that manages the Object subdirectory.
- * Main function is to store and get serializable objects with SHA codes.
+ * A class that manages the Object subdirectory. Main function is to store and get serializable objects with SHA codes.
  */
 public class ObjectSubDir {
     public static final int SHACUT = 2;
@@ -23,8 +22,7 @@ public class ObjectSubDir {
     public ObjectSubDir() { }
 
     /**
-     * Constructor that takes the object directory as parameter and reads.
-     * all available SHA Codes from the directory
+     * Constructor that takes the object directory as parameter and reads all available SHA Codes from the directory
      * @param objDir the working object directory
      */
     public ObjectSubDir(String objDir) {
@@ -32,8 +30,7 @@ public class ObjectSubDir {
     }
 
     /**
-     * Constructor that takes the object directory as parameter and.
-     * reads all available SHA Codes from the directory
+     * Constructor that takes the object directory as parameter and reads all available SHA Codes from the directory
      * @param objDir the working object diretory.
      */
     public ObjectSubDir(File objDir) {
@@ -49,6 +46,7 @@ public class ObjectSubDir {
     public void add(gitlet.ObjectInDir object) throws IOException {
         String objectSHA = object.sha();
         if (shaCodes.contains(objectSHA)) {
+            //throw new RuntimeException("There's either a SHA collision or you're adding a existing item.");
             return;
         }
         String shaHead = objectSHA.substring(0, 2);

@@ -98,11 +98,11 @@ public class OperationInDir extends Utils implements Serializable {
      * @return
      */
     public boolean contains(String obj, String shaID) {
-        Set<String> sha = this.addedInSep.get(obj);
-        if (sha == null) {
+        Set<String> SHA = this.addedInSep.get(obj);
+        if (SHA == null) {
             return false;
         }
-        return sha.contains(shaID);
+        return SHA.contains(shaID);
     }
 
     public Object get(String objType, String objName) throws IOException, ClassNotFoundException {
@@ -146,8 +146,7 @@ public class OperationInDir extends Utils implements Serializable {
      * @throws IOException
      */
 
-    public Object load(String objType, String objectName) throws IOException,
-            ClassNotFoundException {
+    public Object load(String objType, String objectName) throws IOException, ClassNotFoundException {
         Path objectPath = Path.of(this.getWorkingDir().getAbsolutePath()).resolve(objectName);
         InputStream loadedOne = Files.newInputStream(objectPath);
         ObjectInputStream ObjectTransform = new ObjectInputStream(loadedOne);

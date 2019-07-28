@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 public class Command {
 
@@ -11,6 +12,9 @@ public class Command {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
+        }
+        public static boolean correctInput(String[] args) {
+            return args.length == 1;
         }
     }
 
@@ -26,6 +30,10 @@ public class Command {
                 System.out.println(e.getMessage());
             }
         }
+
+        public static boolean correctInput(String[] args) {
+            return args.length == 2;
+        }
     }
 
     public static class CommitCommand {
@@ -34,11 +42,11 @@ public class Command {
                 ClassNotFoundException {
             Index index = repo.getIndex();
             if (args.length < 2) {
-                System.out.println("Incorrect operands");
+                System.out.println("Incorrect operands.");
                 return;
             }
             if (args[1].equals("")) {
-                System.out.println("Please enter a commit message.");
+                System.out.println("Incorrect operands.");
                 return;
             }
             String message = args[1];
@@ -52,13 +60,17 @@ public class Command {
                 System.out.println(e.getMessage());
             }
         }
+
+        public static boolean correctInput(String[] args) {
+            return args.length == 2;
+        }
     }
 
     public static class RmCommand {
         public static void callrm(Repository repo, String[] args) throws IOException,
                 ClassNotFoundException {
             if (args.length < 2) {
-                System.out.println("Please enter a remove message.");
+                System.out.println("Incorrect operands.");
                 return;
             }
             try {
@@ -67,16 +79,20 @@ public class Command {
                 System.out.println(e.getMessage());
             }
         }
+
+        public static boolean correctInput(String[] args) {
+            return args.length == 2;
+        }
     }
 
     public static class FindCommand {
         public static void callFind(Repository repo, String[] args) throws
                 IOException, ClassNotFoundException {
             if (args.length < 2) {
-                System.out.println("Please enter a find message.");
+                System.out.println("Incorrect operands.");
                 return;
             }
-            String commitMessgae = args[1].replace("\"", "");
+            String commitMessgae = args[1];
             try {
                 repo.find(commitMessgae);
             } catch (IOException e) {
@@ -103,6 +119,9 @@ public class Command {
                 ClassNotFoundException {
             repo.globalLog();
         }
+        public static boolean correctInput(String[] args) {
+            return args.length == 1;
+        }
     }
 
     public static class StatusCommand {
@@ -110,6 +129,9 @@ public class Command {
         public static void callStatus(Repository repo, String[] args) throws IOException,
                 ClassNotFoundException {
             repo.status();
+        }
+        public static boolean correctInput(String[] args) {
+            return args.length == 1;
         }
     }
 
@@ -133,7 +155,7 @@ public class Command {
                         repo.checkoutBranch(args[1]);
                         break;
                     default:
-                        throw new IllegalArgumentException("Incorrect operands.");
+                        throw new Exception("Incorrect operands.");
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -144,7 +166,7 @@ public class Command {
     public static class BranchCommand {
         public static void callBranch(Repository repo, String[] args) {
             if (args.length < 2) {
-                System.out.println("Please enter a branch name.");
+                System.out.println("Incorrect operands.");
             }
             try {
                 repo.branch(args[1]);
@@ -157,7 +179,7 @@ public class Command {
     public static class RmBranchCommand {
         public static void callRmBranch(Repository repo, String[] args) {
             if (args.length < 2) {
-                System.out.println("Please enter a branch name.");
+                System.out.println("Incorrect operands.");
             }
             try {
                 repo.rmBranch(args[1]);
@@ -170,8 +192,7 @@ public class Command {
     public static class ResetCommand {
         public static void callReset(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for reset. Usage: "
-                        + "java gitlet.Main reset [commit id]");
+                System.out.println("Incorrect operands.");
             }
             try {
                 repo.reset(args[1], true);
@@ -184,8 +205,7 @@ public class Command {
     public static class MergeCommand {
         public static void callMerge(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for merge. Usage: "
-                        + "java gitlet.Main merge [branch name]");
+                System.out.println("Incorrect operands.");
             }
             try {
                 repo.merge(args[1]);

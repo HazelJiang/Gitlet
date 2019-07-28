@@ -1,17 +1,10 @@
 package gitlet;
-import java.io.File;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Scanner;
-import java.io.ObjectInputStream;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.FileNotFoundException;
-
 
 
 
@@ -78,7 +71,7 @@ public class Repository extends OperationInDir {
             File indexFile = Utils.join(gitDir, "index");
             FileInputStream fis = new FileInputStream(indexFile);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            index = (Index) ois.readObject();
+            index = (Index)ois.readObject();
         }
     }
 
@@ -89,9 +82,9 @@ public class Repository extends OperationInDir {
     /**
      * This method initialize a new git repo if there doesn't exist a repo
      */
-    public void init() throws IllegalArgumentException, IOException, ClassNotFoundException  {
+    public void init() throws IllegalStateException, IOException, ClassNotFoundException  {
         if (initialized) {
-            throw new IllegalArgumentException(
+            throw new IllegalStateException(
                     "A gitlet version-control system already exists in the current directory.");
         } else {
             String initialCommit = "initial commit";
@@ -129,7 +122,7 @@ public class Repository extends OperationInDir {
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
+        } catch(FileNotFoundException e) {
             throw new FileNotFoundException("File does not exist.");
         }
         byte[] fileContent = fis.readAllBytes();
@@ -140,9 +133,14 @@ public class Repository extends OperationInDir {
          */
         if (currentCommit.containsFile(fileName)) {
             String oldFileSHA = currentCommit.get(fileName);
+            if (index.getRemoveStage().contains(fileName)) {
+                index.getRemoveStage().remove(fileName);
+                writeIndex();
+            }
             if (oldFileSHA.equals(fileBlob.sha())) {
                 if (index.getAddStage().containsKey(fileName)) {
                     index.getAddStage().remove(fileName);
+                    writeIndex();
                 }
                 return;
             }
@@ -158,10 +156,9 @@ public class Repository extends OperationInDir {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public void commit(String message) throws IllegalArgumentException, IOException,
-            ClassNotFoundException {
+    public void commit(String message) throws Exception {
         if (index.getRemoveStage().isEmpty() && index.getAddStage().isEmpty()) {
-            throw new IllegalArgumentException("No changes added to the commit.");
+            throw new Exception("No changes added to the commit.");
         }
         Commit commit = new Commit(message, getCurrentTime(), currentCommit.sha(), this);
         commit.mergeIndex(index);
@@ -185,12 +182,12 @@ public class Repository extends OperationInDir {
      * (don’t remove the file!).
      * @param fileName the file to be removed
      */
-    public void remove(String fileName) throws IOException, IllegalArgumentException  {
+    public void remove(String fileName) throws Exception {
         if (currentCommit.containsFile(fileName)) {
             // Delete the file from the working directory
             File removeFile = Utils.join(getWorkingDir(), fileName);
             if (!Utils.restrictedDelete(removeFile)) {
-                throw new IllegalArgumentException("No reason to remove the file.");
+                throw new Exception("No reason to remove the file.");
             }
             //Unstage it if it was staged and mark the file to be untracked by the next commit
             index.remove(fileName);
@@ -199,7 +196,7 @@ public class Repository extends OperationInDir {
             index.remove(fileName);
             writeIndex();
         } else {
-            throw new IllegalArgumentException("No reason to remove the file.");
+            throw new Exception("No reason to remove the file.");
         }
     }
 
@@ -219,17 +216,12 @@ public class Repository extends OperationInDir {
      * Prints out all the information of all commits
      */
     public void globalLog() throws IOException, ClassNotFoundException {
-        Set<String> loggedCommits = new HashSet<>();
-        for (String sha: referenceDir.getHeads().values()) {
-            Commit c = (Commit) objectDir.get(sha);
-            while (c != null) {
-                if (loggedCommits.contains(c.sha())) {
-                    break;
-                }
-                System.out.println(c);
+        Set<String> allSHA = objectDir.getShaCodes();
+        for (String sha: allSHA) {
+            ObjectInDir o = objectDir.get(sha);
+            if (o.getClassName().equals("Commit")) {
+                System.out.println((Commit) o);
                 System.out.println();
-                loggedCommits.add(c.sha());
-                c = c.getParentCommit(this);
             }
         }
     }
@@ -276,6 +268,10 @@ public class Repository extends OperationInDir {
         }
         Set<String> trackedFiles = tempCommit.getBlob().keySet();
         Set<String> untrackedFiles = new HashSet<>();
+        /**
+         * Untracked files:
+         * files that are in the current working directory but not in the stage or commit.
+         */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
                 untrackedFiles.add(s);
@@ -283,6 +279,10 @@ public class Repository extends OperationInDir {
         }
         Set<String> deletedFiles = new HashSet<>();
         Set<String> bothExist = new HashSet<>();
+        /**
+         * Deleted files:
+         * files that are tracked or commited but not found in the current directory.
+         */
         for (String s: trackedFiles) {
             if (!currentFilesSet.contains(s)) {
                 deletedFiles.add(s);
@@ -290,6 +290,10 @@ public class Repository extends OperationInDir {
                 bothExist.add(s);
             }
         }
+        /**
+         * Modified files:
+         * files that exists in both the working directory and the new commit but different.
+         */
         Set<String> modifiedFiles = new HashSet<>();
         for (String fileName: bothExist) {
             String sha1 = tempCommit.get(fileName);
@@ -322,23 +326,21 @@ public class Repository extends OperationInDir {
      * @param commitSHA the SHA ID of the commit to restore the file from
      * @throws Exception
      */
-    public void checkoutFileWithCommit(String fileName, String commitSHA) throws IOException,
-            ClassNotFoundException {
+    public void checkoutFileWithCommit(String fileName, String commitSHA) throws Exception {
         boolean isExist = false;
         if (!objectDir.contains(commitSHA)) {
             for (String storeID : objectDir.getShaCodes()) {
                 if (isSubString(commitSHA, storeID)) {
                     isExist = true;
-                    commitSHA = storeID;
                 }
             }
             if (!isExist) {
-                throw new IllegalArgumentException("No commit with that id exists.");
+                throw new Exception("No commit with that id exists.");
             }
         }
         Commit desiredCommit = (Commit) objectDir.get(commitSHA);
         if (!desiredCommit.containsFile(fileName)) {
-            throw new IllegalArgumentException("File does not exist in that commit.");
+            throw new Exception("File does not exist in that commit.");
         }
         String fileSHA = desiredCommit.get(fileName);
         Blob fileBlob = (Blob) objectDir.get(fileSHA);
@@ -365,8 +367,7 @@ public class Repository extends OperationInDir {
      * @param fileName the file to restore
      * @throws Exception
      */
-    public void checkoutFileWithCurrentCommit(String fileName) throws IOException,
-            ClassNotFoundException {
+    public void checkoutFileWithCurrentCommit(String fileName) throws Exception {
         checkoutFileWithCommit(fileName, currentCommit.sha());
     }
 
@@ -375,13 +376,12 @@ public class Repository extends OperationInDir {
      * @param branchName the name of the branch to restore.
      * @throws Exception
      */
-    public void checkoutBranch(String branchName) throws IllegalArgumentException,
-            IOException, ClassNotFoundException {
+    public void checkoutBranch(String branchName) throws Exception {
         if (!referenceDir.containsBranch(branchName)) {
-            throw new IllegalArgumentException("No such branch exists.");
+            throw new Exception("No such branch exists.");
         }
         if (branchName.equals(branch)) {
-            throw new IllegalArgumentException("No need to check out the current branch.");
+            throw new Exception("No need to check out the current branch.");
         }
         String desiredCommit = referenceDir.getHead(branchName);
         reset(desiredCommit, false);
@@ -395,9 +395,9 @@ public class Repository extends OperationInDir {
      * @param branchName the name of the new branch.
      * @throws Exception
      */
-    public void branch(String branchName) throws IOException, IllegalArgumentException {
+    public void branch(String branchName) throws Exception {
         if (referenceDir.containsBranch(branchName)) {
-            throw new IllegalArgumentException("A branch with that name already exists.");
+            throw new Exception("A branch with that name already exists.");
         }
         referenceDir.addBranch(branchName, currentCommit.sha());
     }
@@ -407,12 +407,12 @@ public class Repository extends OperationInDir {
      * @param branchName
      * @throws Exception
      */
-    public void rmBranch(String branchName) throws IllegalArgumentException {
+    public void rmBranch(String branchName) throws Exception {
         if (!referenceDir.containsBranch(branchName)) {
-            throw new IllegalArgumentException("A branch with that name does not exist.");
+            throw new Exception("A branch with that name does not exist.");
         }
         if (branchName.equals(branch)) {
-            throw new IllegalArgumentException("Cannot remove the current branch.");
+            throw new Exception("Cannot remove the current branch.");
         }
         referenceDir.removeBranch(branchName);
     }
@@ -448,8 +448,7 @@ public class Repository extends OperationInDir {
          */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new IllegalArgumentException("There is an "
-                        + "untracked file in the way; delete it or add it first.");
+                throw new IllegalArgumentException("There is an untracked file in the way; delete it or add it first.");
             }
         }
         /**
@@ -481,31 +480,31 @@ public class Repository extends OperationInDir {
 
         currentCommit = desiredCommit;
     }
-    public void find(String messgae) throws IOException, ClassNotFoundException {
-        int count = 0;
-        Commit c = currentCommit;
-        while (c != null) {
-            if (c.getMessage().equals(messgae)) {
-                count++;
-                System.out.println(c.sha());
+    public void find(String message) throws IOException, ClassNotFoundException {
+        Set<String> allSHA = objectDir.getShaCodes();
+        boolean found = false;
+        for (String sha: allSHA) {
+            ObjectInDir o = objectDir.get(sha);
+            if (o.getClassName().equals("Commit") && ((Commit) o).find(message)) {
+                System.out.println((Commit) o);
+                System.out.println();
+                found = true;
             }
-            c = c.getParentCommit(this);
         }
-        if (count == 0) {
-           System.out.println( "Found no commit with that message.");
+        if (!found) {
+            System.out.println("Found no commit with that message.");
         }
     }
 
-    public void merge(String branchName) throws IllegalArgumentException,
-            IOException, ClassNotFoundException {
+    public void merge(String branchName) throws Exception {
         if (!index.getAddStage().isEmpty() || !index.getRemoveStage().isEmpty()) {
-            throw new IllegalArgumentException("You have uncommitted changes.");
+            throw new Exception("You have uncommitted changes.");
         }
         if (!referenceDir.containsBranch(branchName)) {
-            throw new IllegalArgumentException("A branch with that name does not exist.");
+            throw new Exception("A branch with that name does not exist.");
         }
         if (branch.equals(branchName)) {
-            throw new IllegalArgumentException("Cannot merge a branch with itself.");
+            throw new Exception("Cannot merge a branch with itself.");
         }
         Commit tempCommit = new Commit("", null, currentCommit.sha(), this);
         tempCommit.mergeIndex(index);
@@ -524,8 +523,7 @@ public class Repository extends OperationInDir {
         Set<String> untrackedFiles = new HashSet<>();
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new IllegalArgumentException("There is an untracked file "
-                        + "in the way; delete it or add it first.");
+                throw new Exception("There is an untracked file in the way; delete it or add it first.");
             }
         }
         Set<String> allParentCommits = new HashSet<>();
@@ -564,12 +562,10 @@ public class Repository extends OperationInDir {
             if (!otherBranchCommit.containsFile(fileName)) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
-            if (currentCommit.containsFile(fileName)
-                    && !c.get(fileName).equals(currentCommit.get(fileName))) {
+            if (currentCommit.containsFile(fileName) && !c.get(fileName).equals(currentCommit.get(fileName))) {
                 modifiedFilesInCurrentCommit.add(fileName);
             }
-            if (otherBranchCommit.containsFile(fileName)
-                    && !c.get(fileName).equals(otherBranchCommit.get(fileName))) {
+            if (otherBranchCommit.containsFile(fileName) && !c.get(fileName).equals(otherBranchCommit.get(fileName))) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
         }
@@ -590,8 +586,7 @@ public class Repository extends OperationInDir {
                 continue;
             }
             else {
-                if (!currentCommit.containsFile(fileName)
-                        && !otherBranchCommit.containsFile(fileName)) {
+                if (!currentCommit.containsFile(fileName) && !otherBranchCommit.containsFile(fileName)) {
                     continue;
                 }
                 if (!currentCommit.containsFile(fileName)) {
@@ -623,8 +618,7 @@ public class Repository extends OperationInDir {
         }
     }
 
-    private void conflictOutput(String fileName, Commit currentCommit, Commit otherCommit)
-            throws IOException, ClassNotFoundException {
+    private void conflictOutput(String fileName, Commit currentCommit, Commit otherCommit) throws IOException, ClassNotFoundException {
         File f = Utils.join(getWorkingDir(), fileName);
         if (!f.exists()) {
             f.createNewFile();
@@ -632,16 +626,16 @@ public class Repository extends OperationInDir {
         FileOutputStream fos = new FileOutputStream(f);
         fos.write("<<<<<<< HEAD\n".getBytes());
         if (currentCommit.containsFile(fileName)) {
-            fos.write(((Blob) (objectDir.get(currentCommit.get(fileName)))).getBlobContent());
+            fos.write(((Blob)(objectDir.get(currentCommit.get(fileName)))).getBlobContent());
         }
         fos.write("=======\n".getBytes());
         if (otherCommit.containsFile(fileName)) {
-            fos.write(((Blob) (objectDir.get(otherCommit.get(fileName)))).getBlobContent());
+            fos.write(((Blob)(objectDir.get(otherCommit.get(fileName)))).getBlobContent());
         }
         fos.write(">>>>>>>".getBytes());
     }
 
-    private void writeHead() throws IOException {
+    private void writeHead() throws FileNotFoundException, IOException {
         File headFile = Utils.join(gitDir.getAbsolutePath(), "HEAD");
         if (!headFile.exists()) {
             headFile.createNewFile();

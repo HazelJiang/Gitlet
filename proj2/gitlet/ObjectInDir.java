@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
      throws ObjectStreamException; */
 
 public abstract class ObjectInDir implements Serializable {
-
     private static final long serialVersionUID = -1843757570228076096L;
     public abstract String sha();
 
@@ -34,5 +33,4 @@ public abstract class ObjectInDir implements Serializable {
         objectOutputStream.writeObject(this);
         objectOutputStream.close();
     }
-
 }
