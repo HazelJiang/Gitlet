@@ -182,7 +182,7 @@ public class Repository extends OperationInDir {
             // Delete the file from the working directory
             File removeFile = Utils.join(getWorkingDir(), fileName);
             if (!Utils.restrictedDelete(removeFile)) {
-                throw new Exception("No reason to remove the file");
+                throw new Exception("No reason to remove the file.");
             }
             //Unstage it if it was staged and mark the file to be untracked by the next commit
             index.remove(fileName);
@@ -191,7 +191,7 @@ public class Repository extends OperationInDir {
             index.remove(fileName);
             writeIndex();
         } else {
-            throw new Exception("No reason to remove the file");
+            throw new Exception("No reason to remove the file.");
         }
     }
 
