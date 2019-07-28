@@ -492,8 +492,7 @@ public class Repository extends OperationInDir {
             c = c.getParentCommit(this);
         }
         if (count == 0) {
-            throw new IllegalArgumentException(
-                    "Found no commit with that message.");
+           System.out.println( "Found no commit with that message.");
         }
     }
 
