@@ -13,9 +13,6 @@ public class Command {
                 System.out.println(e.getMessage());
             }
         }
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
-        }
     }
 
     public static class AddCommand {
@@ -29,10 +26,6 @@ public class Command {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-        }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 2;
         }
     }
 
@@ -60,10 +53,6 @@ public class Command {
                 System.out.println(e.getMessage());
             }
         }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 2;
-        }
     }
 
     public static class RmCommand {
@@ -78,10 +67,6 @@ public class Command {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-        }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 2;
         }
     }
 
@@ -119,9 +104,6 @@ public class Command {
                 ClassNotFoundException {
             repo.globalLog();
         }
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
-        }
     }
 
     public static class StatusCommand {
@@ -129,9 +111,6 @@ public class Command {
         public static void callStatus(Repository repo, String[] args) throws IOException,
                 ClassNotFoundException {
             repo.status();
-        }
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
         }
     }
 

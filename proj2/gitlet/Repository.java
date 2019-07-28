@@ -588,15 +588,15 @@ public class Repository extends OperationInDir {
         boolean conflict = false;
         for (String fileName: modifiedFilesInOtherCommit) {
             if (!modifiedFilesInCurrentCommit.contains(fileName)) {
-                Commit otherCommit = (Commit) objectDir.get(referenceDir.getHead(branchName));
-                Commit traceFile = otherCommit;
-                while (otherCommit != null) {
-                    if (c.getParentCommit(this).containsFile(fileName)) {
-                        traceFile = c;
+                Commit traceFile = otherBranchCommit;
+                Commit other = otherBranchCommit;
+                while (other != null) {
+                    if (other.getParentCommit(this).containsFile(fileName)) {
+                        traceFile = other;
                     }
-                    c = c.getParentCommit(this);
+                    other = other.getParentCommit(this);
                 }
-                if (traceFile != otherCommit) {
+                if (traceFile != otherBranchCommit) {
                     checkoutFileWithCommit(fileName, traceFile.sha());
                 }
             }
