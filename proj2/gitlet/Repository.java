@@ -334,6 +334,7 @@ public class Repository extends OperationInDir {
             for (String storeID : objectDir.getShaCodes()) {
                 if (isSubString(commitSHA, storeID)) {
                     isExist = true;
+                    commitSHA = storeID;
                 }
             }
             if (!isExist) {
