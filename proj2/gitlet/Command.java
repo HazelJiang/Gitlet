@@ -92,7 +92,7 @@ public class Command {
                 System.out.println("Please enter a find message.");
                 return;
             }
-            String commitMessgae = args[1];
+            String commitMessgae = args[1].replace("\"", "");
             try {
                 repo.find(commitMessgae);
             } catch (IOException e) {
