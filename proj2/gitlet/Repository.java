@@ -203,6 +203,7 @@ public class Repository extends OperationInDir {
         while (c != null) {
             System.out.println(c);
             System.out.println();
+            System.out.println();
             c = c.getParentCommit(this);
         }
     }

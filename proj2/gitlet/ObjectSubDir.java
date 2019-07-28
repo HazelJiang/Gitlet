@@ -84,12 +84,7 @@ public class ObjectSubDir {
      * @return Whether the object already exist.
      */
     public boolean contains(String objectSHA) {
-        for (String shaID : shaCodes) {
-            if (shaID.equals(objectSHA) || objectSHA.equals(shaID.substring(0, 6))) {
-                return true;
-            }
-        }
-        return false;
+        return shaCodes.contains(objectSHA);
     }
 
     /**
