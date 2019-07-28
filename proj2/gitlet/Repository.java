@@ -225,21 +225,6 @@ public class Repository extends OperationInDir {
             }
         }
     }
-    public void find(String messgae) throws IOException, ClassNotFoundException {
-        final int[] count = new int[] { 0 };
-        Commit c = currentCommit;
-        while (c != null) {
-            if (c.getMessage().equals(messgae)) {
-                count[0]++;
-                System.out.println(c.sha());
-            }
-            c = c.getParentCommit(this);
-        }
-        if (count[0] == 0) {
-            throw new IllegalArgumentException(
-                    "Found no commit with that message.");
-        }
-    }
 
     /**
      * Displays what branches currently exist, and marks the current branch with a *.
@@ -417,9 +402,10 @@ public class Repository extends OperationInDir {
      * @param setPointer argument for reusability by "checkout"
      * @throws Exception
      */
-    public void reset(String commitID, boolean setPointer) throws Exception {
+    public void reset(String commitID, boolean setPointer) throws IllegalArgumentException,
+            IOException, ClassNotFoundException {
         if (!objectDir.contains(commitID)) {
-            throw new Exception("No commit with that id exists.");
+            throw new IllegalArgumentException("No commit with that id exists.");
         }
         /**
          * See whether there are untracked files
@@ -441,7 +427,7 @@ public class Repository extends OperationInDir {
          */
         for (String s: currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new Exception("There is an untracked file in the way; delete it or add it first.");
+                throw new IllegalArgumentException("There is an untracked file in the way; delete it or add it first.");
             }
         }
         /**
@@ -472,6 +458,21 @@ public class Repository extends OperationInDir {
         }
 
         currentCommit = desiredCommit;
+    }
+    public void find(String messgae) throws IOException, ClassNotFoundException {
+        final int[] count = new int[] { 0 };
+        Commit c = currentCommit;
+        while (c != null) {
+            if (c.getMessage().equals(messgae)) {
+                count[0]++;
+                System.out.println(c.sha());
+            }
+            c = c.getParentCommit(this);
+        }
+        if (count[0] == 0) {
+            throw new IllegalArgumentException(
+                    "Found no commit with that message.");
+        }
     }
 
     public void merge(String branchName) throws Exception {
