@@ -593,21 +593,6 @@ public class Repository extends OperationInDir {
             }
         }
         boolean conflict = false;
-        for (String fileName: modifiedFilesInOtherCommit) {
-            if (!modifiedFilesInCurrentCommit.contains(fileName)) {
-                Commit traceFile = otherBranchCommit;
-                Commit other = otherBranchCommit;
-                while (other != null) {
-                    if (other.getParentCommit(this).containsFile(fileName)) {
-                        traceFile = other;
-                    }
-                    other = other.getParentCommit(this);
-                }
-                if (traceFile != otherBranchCommit) {
-                    checkoutFileWithCommit(fileName, traceFile.sha());
-                }
-            }
-        }
         for (String fileName: modifiedFilesInCurrentCommit) {
             if (!modifiedFilesInOtherCommit.contains(fileName)) {
                 // Modified in this commit but not in the other
