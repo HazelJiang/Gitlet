@@ -320,19 +320,6 @@ public class Repository extends OperationInDir {
         System.out.println();
     }
 
-    /** this method check if a string is one other string's substring
-     * @param string1
-     * @param string2
-     */
-    public boolean isSubString (String string1, String string2) {
-        int len = string1.length();
-        String string2Sub = string2.substring(0, len);
-        if (string2Sub.equals(string1)) {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Restore the content of a file with the content it stored in the given commit.
      * @param fileName the file to restore
@@ -347,9 +334,9 @@ public class Repository extends OperationInDir {
                     isExist = true;
                 }
             }
-        }
-        if (!isExist) {
-            throw new Exception("No commit with that id exists.");
+            if (!isExist) {
+                throw new Exception("No commit with that id exists.");
+            }
         }
         Commit desiredCommit = (Commit) objectDir.get(commitSHA);
         if (!desiredCommit.containsFile(fileName)) {
@@ -360,6 +347,19 @@ public class Repository extends OperationInDir {
         File desiredFile = Utils.join(getWorkingDir(), fileName);
         FileOutputStream fos = new FileOutputStream(desiredFile);
         fos.write(fileBlob.getBlobContent());
+    }
+
+    /** this method check if a string is one other string's substring
+     * @param string1
+     * @param string2
+     */
+    public boolean isSubString (String string1, String string2) {
+        int len = string1.length();
+        String string2Sub = string2.substring(0, len);
+        if (string2Sub.equals(string1)) {
+            return true;
+        }
+        return false;
     }
 
     /**

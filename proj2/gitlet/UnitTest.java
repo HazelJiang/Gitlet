@@ -10,7 +10,7 @@ import java.io.FileOutputStream;
  */
 public class UnitTest {
 
-    @Test
+    /*@Test
     public void test_init() throws Exception {
         System.out.println(System.getProperty("user.dir"));
         try {
@@ -94,7 +94,7 @@ public class UnitTest {
         Command.CommitCommand.callCommit(new Repository("Test"), new String[]{"commit", "Commit in master branch of file 2"});
         System.out.println("Separate");
         Command.CheckoutCommand.callCheckout(new Repository("Test"), new String[]{"checkout", newBranchName});
-    }
+    }*/
 }
 
 
