@@ -485,16 +485,16 @@ public class Repository extends OperationInDir {
         currentCommit = desiredCommit;
     }
     public void find(String messgae) throws IOException, ClassNotFoundException {
-        final int[] count = new int[] { 0 };
+        int count = 0;
         Commit c = currentCommit;
         while (c != null) {
             if (c.getMessage().equals(messgae)) {
-                count[0]++;
+                count++;
                 System.out.println(c.sha());
             }
             c = c.getParentCommit(this);
         }
-        if (count[0] == 0) {
+        if (count == 0) {
             throw new IllegalArgumentException(
                     "Found no commit with that message.");
         }
@@ -594,9 +594,9 @@ public class Repository extends OperationInDir {
                         traceFile = c;
                     }
                     c = c.getParentCommit(this);
-                }
-                if (traceFile != otherCommit) {
-                    checkoutFileWithCommit(fileName, traceFile.sha());
+                    if (traceFile != otherCommit) {
+                        checkoutFileWithCommit(fileName, traceFile.sha());
+                    }
                 }
             }
         }

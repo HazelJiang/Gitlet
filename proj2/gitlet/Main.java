@@ -9,7 +9,7 @@ public class Main {
 
     /* Usage: java gitlet.Main ARGS, where ARGS contains
        <COMMAND> <OPERAND> .... */
-    public static void main(String... args) throws Exception {
+    public static void main(String... args) throws IOException, ClassNotFoundException {
         ArrayList<String> instruction = new ArrayList<String>();
         instruction.add("init");
         instruction.add("add");

@@ -1,26 +1,22 @@
 package gitlet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 public class Command {
 
     public static class InitCommand {
-        public static void callInit(Repository repo, String[] args) throws Exception {
+        public static void callInit(Repository repo, String[] args) throws IOException,
+                ClassNotFoundException {
             try {
                 repo.init();
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
-        }
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
         }
     }
 
     public static class AddCommand {
-        public static void callAdd(Repository repo, String[] args) throws IOException,
-                ClassNotFoundException {
+        public static void callAdd(Repository repo, String[] args) {
             String fileName = args[1];
             File workingDir = repo.getWorkingDir();
             File addFile = Utils.join(workingDir.getAbsolutePath(), fileName);
@@ -30,16 +26,11 @@ public class Command {
                 System.out.println(e.getMessage());
             }
         }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 2;
-        }
     }
 
     public static class CommitCommand {
 
-        public static void callCommit(Repository repo, String[] args) throws IOException,
-                ClassNotFoundException {
+        public static void callCommit(Repository repo, String[] args) {
             Index index = repo.getIndex();
             if (args.length < 2) {
                 System.out.println("Incorrect operands");
@@ -56,38 +47,30 @@ public class Command {
             }
             try {
                 repo.commit(message);
-            } catch (Exception e) {
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            } catch (ClassNotFoundException e) {
                 System.out.println(e.getMessage());
             }
-        }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 2;
         }
     }
 
     public static class RmCommand {
-        public static void callrm(Repository repo, String[] args) throws IOException,
-                ClassNotFoundException {
+        public static void callrm(Repository repo, String[] args) {
             if (args.length < 2) {
                 System.out.println("Please enter a remove message.");
                 return;
             }
             try {
                 repo.remove(args[1]);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-        }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 2;
         }
     }
 
     public static class FindCommand {
-        public static void callFind(Repository repo, String[] args) throws
-                IOException, ClassNotFoundException {
+        public static void callFind(Repository repo, String[] args) {
             if (args.length < 2) {
                 System.out.println("Please enter a find message.");
                 return;
@@ -108,19 +91,12 @@ public class Command {
                 ClassNotFoundException {
             repo.log();
         }
-
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
-        }
     }
 
     public static class GlobalLogCommand {
         public static void callGloballog(Repository repo, String[] args) throws IOException,
                 ClassNotFoundException {
             repo.globalLog();
-        }
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
         }
     }
 
@@ -130,24 +106,22 @@ public class Command {
                 ClassNotFoundException {
             repo.status();
         }
-        public static boolean correctInput(String[] args) {
-            return args.length == 1;
-        }
     }
 
     public static class CheckoutCommand {
-        public static void callCheckout(Repository repo, String[] args) {
+        public static void callCheckout(Repository repo, String[] args) throws
+                ClassNotFoundException {
             try {
                 switch (args.length) {
                     case 3:
                         if (!args[1].equals("--")) {
-                            throw new Exception("Invalid Argument for checkout.");
+                            throw new IllegalArgumentException("Invalid Argument for checkout.");
                         }
                         repo.checkoutFileWithCurrentCommit(args[2]);
                         break;
                     case 4:
                         if (!args[2].equals("--")) {
-                            throw new Exception("Invalid Argument for checkout.");
+                            throw new IllegalArgumentException("Invalid Argument for checkout.");
                         }
                         repo.checkoutFileWithCommit(args[3], args[1]);
                         break;
@@ -155,9 +129,9 @@ public class Command {
                         repo.checkoutBranch(args[1]);
                         break;
                     default:
-                        throw new Exception("Invalid Argument for checkout.");
+                        throw new IllegalArgumentException("Invalid Argument for checkout.");
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -170,7 +144,7 @@ public class Command {
             }
             try {
                 repo.branch(args[1]);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -183,7 +157,7 @@ public class Command {
             }
             try {
                 repo.rmBranch(args[1]);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -197,7 +171,9 @@ public class Command {
             }
             try {
                 repo.reset(args[1], true);
-            } catch (Exception e) {
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            } catch (ClassNotFoundException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -211,7 +187,9 @@ public class Command {
             }
             try {
                 repo.merge(args[1]);
-            } catch (Exception e) {
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            } catch (ClassNotFoundException e) {
                 System.out.println(e.getMessage());
             }
         }
