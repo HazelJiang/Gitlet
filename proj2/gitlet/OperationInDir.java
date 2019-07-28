@@ -6,16 +6,16 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.Iterator;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.InputStream;
 
 public class OperationInDir extends Utils implements Serializable {
     /**
@@ -98,11 +98,11 @@ public class OperationInDir extends Utils implements Serializable {
      * @return
      */
     public boolean contains(String obj, String shaID) {
-        Set<String> sha = this.addedInSep.get(obj);
-        if (sha == null) {
+        Set<String> SHA = this.addedInSep.get(obj);
+        if (SHA == null) {
             return false;
         }
-        return sha.contains(shaID);
+        return SHA.contains(shaID);
     }
 
     public Object get(String objType, String objName) throws IOException, ClassNotFoundException {
@@ -146,15 +146,14 @@ public class OperationInDir extends Utils implements Serializable {
      * @throws IOException
      */
 
-    public Object load(String objType, String objectName)
-            throws IOException, ClassNotFoundException {
+    public Object load(String objType, String objectName) throws IOException, ClassNotFoundException {
         Path objectPath = Path.of(this.getWorkingDir().getAbsolutePath()).resolve(objectName);
         InputStream loadedOne = Files.newInputStream(objectPath);
-        ObjectInputStream objectTransform = new ObjectInputStream(loadedOne);
+        ObjectInputStream ObjectTransform = new ObjectInputStream(loadedOne);
         Object objGet;
-        objGet = objectTransform.readObject();
+        objGet = ObjectTransform.readObject();
         loadedOne.close();
-        objectTransform.close();
+        ObjectTransform.close();
         this.objectCache.put(objectName, objGet);
         return objGet;
     }

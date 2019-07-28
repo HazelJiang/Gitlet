@@ -1,13 +1,9 @@
 package gitlet;
-
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Represents all information in a commit.
@@ -131,13 +127,12 @@ public class Commit extends ObjectInDir {
         return this.parent;
     }
 
-    public String getMessage() {
-        return this.message;
+    public String getMessage() { return this.message; }
+
+    public boolean find(String message) {
+        return this.message.contains(message);
     }
 
-    public boolean find(String a) {
-        return this.message.contains(a);
-    }
     public Commit getParentCommit(Repository rep) throws IOException, ClassNotFoundException {
         if (parent == null) {
             return null;

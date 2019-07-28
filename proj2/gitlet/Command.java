@@ -1,8 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
 public class Command {
 
     public static class InitCommand {
@@ -45,7 +45,7 @@ public class Command {
                 System.out.println("Please enter a commit message.");
                 return;
             }
-            if (args[1].equals("")) {
+            if (args[1].equals(" ")) {
                 System.out.println("Please enter a commit message.");
                 return;
             }
@@ -82,6 +82,24 @@ public class Command {
 
         public static boolean correctInput(String[] args) {
             return args.length == 2;
+        }
+    }
+
+    public static class FindCommand {
+        public static void callFind(Repository repo, String[] args) throws
+                IOException, ClassNotFoundException {
+            if (args.length < 2) {
+                System.out.println("Please enter a find message.");
+                return;
+            }
+            String commitMessgae = args[1];
+            try {
+                repo.find(commitMessgae);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            } catch (ClassNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -123,7 +141,6 @@ public class Command {
                 switch (args.length) {
                     case 3:
                         if (!args[1].equals("--")) {
-                            System.out.println();
                             throw new Exception("Invalid Argument for checkout.");
                         }
                         repo.checkoutFileWithCurrentCommit(args[2]);
@@ -175,8 +192,8 @@ public class Command {
     public static class ResetCommand {
         public static void callReset(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for reset. Usage: "
-                        + "java gitlet.Main reset [commit id]");
+                System.out.println("Invalid argument for reset. Usage: " +
+                        "java gitlet.Main reset [commit id]");
             }
             try {
                 repo.reset(args[1], true);
@@ -189,8 +206,8 @@ public class Command {
     public static class MergeCommand {
         public static void callMerge(Repository repo, String[] args) {
             if (args.length != 2) {
-                System.out.println("Invalid argument for merge. Usage: "
-                        + "java gitlet.Main merge [branch name]");
+                System.out.println("Invalid argument for merge. Usage: " +
+                        "java gitlet.Main merge [branch name]");
             }
             try {
                 repo.merge(args[1]);

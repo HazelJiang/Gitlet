@@ -1,9 +1,9 @@
 package gitlet;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Index extends Utils implements Serializable {
     private static final long serialVersionUID = -8339216273921535654L;

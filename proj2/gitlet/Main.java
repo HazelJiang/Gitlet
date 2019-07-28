@@ -1,7 +1,6 @@
 package gitlet;
 
 import java.util.ArrayList;
-
 /* Driver class for Gitlet, the tiny stupid version-control system.
    @author
 */
@@ -23,6 +22,7 @@ public class Main {
         instruction.add("rm-branch");
         instruction.add("reset");
         instruction.add("status");
+        instruction.add("find");
 
         if (args == null || args.length == 0) {
             System.out.println("Please enter a command.");
@@ -73,6 +73,9 @@ public class Main {
         }
         if (command.equals("status")) {
             Command.StatusCommand.callStatus(repository, args);
+        }
+        if (command.equals("find")) {
+            Command.FindCommand.callFind(repository, args);
         }
     }
 
