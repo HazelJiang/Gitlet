@@ -1,8 +1,8 @@
 package gitlet;
 
-import java.io.Serializable;
-import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 /*private void writeObject(java.io.ObjectOutputStream out)
      throws IOException
  private void readObject(java.io.ObjectInputStream in)
@@ -28,9 +28,16 @@ public abstract class ObjectInDir implements Serializable {
         return this.sha().equals(other.sha());
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public void writeToFile(String filename) throws java.io.IOException {
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("output.txt"));
+        ObjectOutputStream objectOutputStream =
+                new ObjectOutputStream(new FileOutputStream("output.txt"));
         objectOutputStream.writeObject(this);
         objectOutputStream.close();
     }
 }
+

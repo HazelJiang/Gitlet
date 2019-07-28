@@ -1,11 +1,17 @@
 package gitlet;
-import java.io.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Scanner;
-
+import java.util.Set;
 
 
 public class Repository extends OperationInDir {
@@ -48,7 +54,10 @@ public class Repository extends OperationInDir {
     public void setCurrentCommit(Commit currentCommit) {
         this.currentCommit = currentCommit;
     }
-    /** This is a constructor method for making a repository
+
+    /**
+     * This is a constructor method for making a repository
+     *
      * @param currentDir the directory user in
      */
     public Repository(String currentDir) throws IOException, ClassNotFoundException {
@@ -71,7 +80,7 @@ public class Repository extends OperationInDir {
             File indexFile = Utils.join(gitDir, "index");
             FileInputStream fis = new FileInputStream(indexFile);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            index = (Index)ois.readObject();
+            index = (Index) ois.readObject();
         }
     }
 
@@ -82,7 +91,7 @@ public class Repository extends OperationInDir {
     /**
      * This method initialize a new git repo if there doesn't exist a repo
      */
-    public void init() throws IllegalStateException, IOException, ClassNotFoundException  {
+    public void init() throws IllegalStateException, IOException, ClassNotFoundException {
         if (initialized) {
             throw new IllegalStateException(
                     "A gitlet version-control system already exists in the current directory.");
@@ -114,6 +123,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Adds a file to the Index area
+     *
      * @param file the file to add
      * @throws FileNotFoundException
      */
@@ -122,7 +132,7 @@ public class Repository extends OperationInDir {
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new FileNotFoundException("File does not exist.");
         }
         byte[] fileContent = fis.readAllBytes();
@@ -147,6 +157,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Commit the changes currently in the index area.
+     *
      * @param message the commit message
      * @throws IOException
      * @throws ClassNotFoundException
@@ -175,6 +186,7 @@ public class Repository extends OperationInDir {
      * If the file isn’t tracked by the current commit but it is staged,
      * unstage the file and do nothing else.
      * (don’t remove the file!).
+     *
      * @param fileName the file to be removed
      */
     public void remove(String fileName) throws Exception {
@@ -182,7 +194,9 @@ public class Repository extends OperationInDir {
             // Delete the file from the working directory
             File removeFile = Utils.join(getWorkingDir(), fileName);
             if (!Utils.restrictedDelete(removeFile)) {
-                throw new Exception("No reason to remove the file.");
+                System.out.println("No reason to remove the file");
+                //throw new Exception("No reason to remove the file");
+                return;
             }
             //Unstage it if it was staged and mark the file to be untracked by the next commit
             index.remove(fileName);
@@ -191,7 +205,8 @@ public class Repository extends OperationInDir {
             index.remove(fileName);
             writeIndex();
         } else {
-            throw new Exception("No reason to remove the file.");
+            System.out.println("No reason to remove the file");
+            //throw new Exception("No reason to remove the file");
         }
     }
 
@@ -212,7 +227,7 @@ public class Repository extends OperationInDir {
      */
     public void globalLog() throws IOException, ClassNotFoundException {
         Set<String> loggedCommits = new HashSet<>();
-        for(String sha: referenceDir.getHeads().values()) {
+        for (String sha : referenceDir.getHeads().values()) {
             Commit c = (Commit) objectDir.get(sha);
             while (c != null) {
                 if (loggedCommits.contains(c.sha())) {
@@ -231,12 +246,13 @@ public class Repository extends OperationInDir {
      * Also displays what files have.
      * been staged or marked for untracking.
      * An example of the exact format it should follow is as follows.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     public void status() throws IOException, ClassNotFoundException {
         System.out.println("=== Branches ===");
-        for (String branchEnumeration: referenceDir.getHeads().keySet()) {
+        for (String branchEnumeration : referenceDir.getHeads().keySet()) {
             if (branch.equals(branchEnumeration)) {
                 System.out.println("*" + branchEnumeration);
             } else {
@@ -245,12 +261,12 @@ public class Repository extends OperationInDir {
         }
         System.out.println();
         System.out.println("=== Staged Files ===");
-        for (String addedFileName: index.getAddStage().keySet()) {
+        for (String addedFileName : index.getAddStage().keySet()) {
             System.out.println(addedFileName);
         }
         System.out.println();
         System.out.println("=== Removed Files ===");
-        for (String removedFileName: index.getRemoveStage()) {
+        for (String removedFileName : index.getRemoveStage()) {
             System.out.println(removedFileName);
         }
         System.out.println();
@@ -261,29 +277,25 @@ public class Repository extends OperationInDir {
         File working = this.getWorkingDir();
         File[] currentFiles = working.listFiles();
         Set<String> currentFilesSet = new HashSet<String>();
-        for (File f: currentFiles) {
+        for (File f : currentFiles) {
             if (!f.isDirectory()) {
                 currentFilesSet.add(f.getName());
             }
         }
         Set<String> trackedFiles = tempCommit.getBlob().keySet();
         Set<String> untrackedFiles = new HashSet<>();
-        /**
-         * Untracked files:
-         * files that are in the current working directory but not in the stage or commit.
-         */
-        for (String s: currentFilesSet) {
+         /* Untracked files:
+         * files that are in the current working directory but not in the stage or commit.*/
+        for (String s : currentFilesSet) {
             if (!trackedFiles.contains(s)) {
                 untrackedFiles.add(s);
             }
         }
         Set<String> deletedFiles = new HashSet<>();
         Set<String> bothExist = new HashSet<>();
-        /**
-         * Deleted files:
-         * files that are tracked or commited but not found in the current directory.
-         */
-        for (String s: trackedFiles) {
+         //Deleted files:
+         //files that are tracked or commited but not found in the current directory.
+        for (String s : trackedFiles) {
             if (!currentFilesSet.contains(s)) {
                 deletedFiles.add(s);
             } else {
@@ -295,7 +307,7 @@ public class Repository extends OperationInDir {
          * files that exists in both the working directory and the new commit but different.
          */
         Set<String> modifiedFiles = new HashSet<>();
-        for (String fileName: bothExist) {
+        for (String fileName : bothExist) {
             String sha1 = tempCommit.get(fileName);
             File f = Utils.join(getWorkingDir(), fileName);
             FileInputStream fis = new FileInputStream(f);
@@ -306,23 +318,23 @@ public class Repository extends OperationInDir {
                 modifiedFiles.add(fileName);
             }
         }
-        for (String deletedFile: deletedFiles) {
+        for (String deletedFile : deletedFiles) {
             System.out.println(deletedFile + " (deleted)");
         }
-        for (String modifiedFile: modifiedFiles) {
+        for (String modifiedFile : modifiedFiles) {
             System.out.println(modifiedFile + " (modified)");
         }
         System.out.println();
         System.out.println("=== Untracked Files ===");
-        for (String untrackedFile: untrackedFiles) {
+        for (String untrackedFile : untrackedFiles) {
             System.out.println(untrackedFile);
         }
-        System.out.println();
     }
 
     /**
      * Restore the content of a file with the content it stored in the given commit.
-     * @param fileName the file to restore
+     *
+     * @param fileName  the file to restore
      * @param commitSHA the SHA ID of the commit to restore the file from
      * @throws Exception
      */
@@ -343,6 +355,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Restore the contents of a file with the its content in the current commit.
+     *
      * @param fileName the file to restore
      * @throws Exception
      */
@@ -352,6 +365,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Restore all files in the head commit of a branch
+     *
      * @param branchName the name of the branch to restore.
      * @throws Exception
      */
@@ -360,7 +374,7 @@ public class Repository extends OperationInDir {
             throw new Exception("No such branch exists.");
         }
         if (branchName.equals(branch)) {
-            throw new Exception("No need to check out the current branch.");
+            throw new Exception("No need to checkout the current branch.");
         }
         String desiredCommit = referenceDir.getHead(branchName);
         reset(desiredCommit, false);
@@ -371,6 +385,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Create a new branch that initially points at the same commit as this one.
+     *
      * @param branchName the name of the new branch.
      * @throws Exception
      */
@@ -383,6 +398,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Removes a branch with the given name. Does not do delete any commit.
+     *
      * @param branchName
      * @throws Exception
      */
@@ -398,14 +414,14 @@ public class Repository extends OperationInDir {
 
     /**
      * Resets all the files in the working directory to a previous commit.
-     * @param commitID the id of the commit to restore
+     *
+     * @param commitID   the id of the commit to restore
      * @param setPointer argument for reusability by "checkout"
      * @throws Exception
      */
-    public void reset(String commitID, boolean setPointer) throws IllegalArgumentException,
-            IOException, ClassNotFoundException {
+    public void reset(String commitID, boolean setPointer) throws Exception {
         if (!objectDir.contains(commitID)) {
-            throw new IllegalArgumentException("No commit with that id exists.");
+            throw new Exception("No commit with that id exists.");
         }
         /**
          * See whether there are untracked files
@@ -415,7 +431,7 @@ public class Repository extends OperationInDir {
         File working = this.getWorkingDir();
         File[] currentFiles = working.listFiles();
         Set<String> currentFilesSet = new HashSet<String>();
-        for (File f: currentFiles) {
+        for (File f : currentFiles) {
             if (!f.isDirectory()) {
                 currentFilesSet.add(f.getName());
             }
@@ -425,16 +441,18 @@ public class Repository extends OperationInDir {
          * Untracked files:
          * files that are in the current working directory but not in the stage or commit.
          */
-        for (String s: currentFilesSet) {
+        for (String s : currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new IllegalArgumentException("There is an untracked file in the way; delete it or add it first.");
+                throw new
+                        Exception("There is an untracked file in the way; "
+                       + "delete it or add it first.");
             }
         }
         /**
          * Start by deleting the whole working directory except for ".gitlet"
          */
         File workingDir = getWorkingDir();
-        for (File f: workingDir.listFiles()) {
+        for (File f : workingDir.listFiles()) {
             if (f.isDirectory()) {
                 continue;
             }
@@ -445,7 +463,7 @@ public class Repository extends OperationInDir {
          * Then we put all the files in the commit into the working dir
          */
         Commit desiredCommit = (Commit) objectDir.get(commitID);
-        for (String fileName: desiredCommit.getBlob().keySet()) {
+        for (String fileName : desiredCommit.getBlob().keySet()) {
             File f = Utils.join(getWorkingDir(), fileName);
             f.createNewFile();
             FileOutputStream fos = new FileOutputStream(f);
@@ -458,21 +476,6 @@ public class Repository extends OperationInDir {
         }
 
         currentCommit = desiredCommit;
-    }
-    public void find(String messgae) throws IOException, ClassNotFoundException {
-        final int[] count = new int[] { 0 };
-        Commit c = currentCommit;
-        while (c != null) {
-            if (c.getMessage().equals(messgae)) {
-                count[0]++;
-                System.out.println(c.sha());
-            }
-            c = c.getParentCommit(this);
-        }
-        if (count[0] == 0) {
-            throw new IllegalArgumentException(
-                    "Found no commit with that message.");
-        }
     }
 
     public void merge(String branchName) throws Exception {
@@ -490,19 +493,19 @@ public class Repository extends OperationInDir {
         File working = this.getWorkingDir();
         File[] currentFiles = working.listFiles();
         Set<String> currentFilesSet = new HashSet<String>();
-        for (File f: currentFiles) {
+        for (File f : currentFiles) {
             if (!f.isDirectory()) {
                 currentFilesSet.add(f.getName());
             }
         }
         Set<String> trackedFiles = tempCommit.getBlob().keySet();
-        /**
-         * Untracked files: files that are in the current working directory but not in the stage or commit.
-         */
+        //Untracked files: files that are in the current working
+        // directory but not in the stage or commit.
         Set<String> untrackedFiles = new HashSet<>();
-        for (String s: currentFilesSet) {
+        for (String s : currentFilesSet) {
             if (!trackedFiles.contains(s)) {
-                throw new Exception("There is an untracked file in the way; delete it or add it first.");
+                throw new Exception("There is an untracked file in the way; "
+                       + "delete it or add it first.");
             }
         }
         Set<String> allParentCommits = new HashSet<>();
@@ -516,7 +519,6 @@ public class Repository extends OperationInDir {
             if (allParentCommits.contains(c.sha())) {
                 break;
             }
-
             if (c.getParentCommit(this) == null) {
                 break;
             }
@@ -527,45 +529,46 @@ public class Repository extends OperationInDir {
             System.out.println("Current branch fast-forwarded.");
             return;
         }
-
         if (c.sha().equals(otherBranchCommit.sha())) {
             System.out.println("Given branch is an ancestor of the current branch.");
             return;
         }
         Set<String> modifiedFilesInCurrentCommit = new HashSet<>();
         Set<String> modifiedFilesInOtherCommit = new HashSet<>();
-        for (String fileName: c.getBlob().keySet()) {
+        for (String fileName : c.getBlob().keySet()) {
             if (!currentCommit.containsFile(fileName)) {
                 modifiedFilesInCurrentCommit.add(fileName);
             }
             if (!otherBranchCommit.containsFile(fileName)) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
-            if (currentCommit.containsFile(fileName) && !c.get(fileName).equals(currentCommit.get(fileName))) {
+            if (currentCommit.containsFile(fileName)
+                    && !c.get(fileName).equals(currentCommit.get(fileName))) {
                 modifiedFilesInCurrentCommit.add(fileName);
             }
-            if (otherBranchCommit.containsFile(fileName) && !c.get(fileName).equals(otherBranchCommit.get(fileName))) {
+            if (otherBranchCommit.containsFile(fileName)
+                    && !c.get(fileName).equals(otherBranchCommit.get(fileName))) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
         }
-        for (String fileName: currentCommit.getBlob().keySet()) {
+        for (String fileName : currentCommit.getBlob().keySet()) {
             if (!c.containsFile(fileName)) {
                 modifiedFilesInCurrentCommit.add(fileName);
             }
         }
-        for (String fileName: otherBranchCommit.getBlob().keySet()) {
+        for (String fileName : otherBranchCommit.getBlob().keySet()) {
             if (!c.containsFile(fileName)) {
                 modifiedFilesInOtherCommit.add(fileName);
             }
         }
         boolean conflict = false;
-        for (String fileName: modifiedFilesInCurrentCommit) {
+        for (String fileName : modifiedFilesInCurrentCommit) {
             if (!modifiedFilesInOtherCommit.contains(fileName)) {
                 // Modified in this commit but not in the other
                 continue;
-            }
-            else {
-                if (!currentCommit.containsFile(fileName) && !otherBranchCommit.containsFile(fileName)) {
+            } else {
+                if (!currentCommit.containsFile(fileName)
+                        && !otherBranchCommit.containsFile(fileName)) {
                     continue;
                 }
                 if (!currentCommit.containsFile(fileName)) {
@@ -578,14 +581,15 @@ public class Repository extends OperationInDir {
                 }
             }
         }
-        for (String fileName: modifiedFilesInOtherCommit) {
+        for (String fileName : modifiedFilesInOtherCommit) {
             if (!modifiedFilesInCurrentCommit.contains(fileName)) {
                 File f = Utils.join(getWorkingDir(), fileName);
                 if (!otherBranchCommit.containsFile(fileName)) {
                     remove(fileName);
                 } else {
                     FileOutputStream fos = new FileOutputStream(f);
-                    fos.write(((Blob) objectDir.get(otherBranchCommit.get(fileName))).getBlobContent());
+                    fos.write(((Blob)
+                            objectDir.get(otherBranchCommit.get(fileName))).getBlobContent());
                     addFile(f);
                 }
             }
@@ -597,19 +601,20 @@ public class Repository extends OperationInDir {
         }
     }
 
-    private void conflictOutput(String fileName, Commit currentCommit, Commit otherCommit) throws IOException, ClassNotFoundException {
+    private void conflictOutput(String fileName, Commit currentCommit1,
+                                Commit otherCommit) throws IOException, ClassNotFoundException {
         File f = Utils.join(getWorkingDir(), fileName);
         if (!f.exists()) {
             f.createNewFile();
         }
         FileOutputStream fos = new FileOutputStream(f);
         fos.write("<<<<<<< HEAD\n".getBytes());
-        if (currentCommit.containsFile(fileName)) {
-            fos.write(((Blob)(objectDir.get(currentCommit.get(fileName)))).getBlobContent());
+        if (currentCommit1.containsFile(fileName)) {
+            fos.write(((Blob) (objectDir.get(currentCommit1.get(fileName)))).getBlobContent());
         }
         fos.write("=======\n".getBytes());
         if (otherCommit.containsFile(fileName)) {
-            fos.write(((Blob)(objectDir.get(otherCommit.get(fileName)))).getBlobContent());
+            fos.write(((Blob) (objectDir.get(otherCommit.get(fileName)))).getBlobContent());
         }
         fos.write(">>>>>>>".getBytes());
     }
@@ -625,6 +630,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Write the index object to a file
+     *
      * @throws IOException
      */
     private void writeIndex() throws IOException {
@@ -639,6 +645,7 @@ public class Repository extends OperationInDir {
 
     /**
      * Read the index object from a file
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -649,6 +656,6 @@ public class Repository extends OperationInDir {
         }
         FileInputStream fis = new FileInputStream(indexFile);
         ObjectInputStream ois = new ObjectInputStream(fis);
-        index = (Index)ois.readObject();
+        index = (Index) ois.readObject();
     }
 }

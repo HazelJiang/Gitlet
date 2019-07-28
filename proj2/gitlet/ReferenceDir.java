@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -51,8 +51,8 @@ public class ReferenceDir {
     private void readHeads() throws FileNotFoundException {
         for (File head: refDir.listFiles()) {
             Scanner headSHAScanner = new Scanner(head);
-            String SHA = headSHAScanner.nextLine();
-            heads.put(head.getName(), SHA);
+            String sha = headSHAScanner.nextLine();
+            heads.put(head.getName(), sha);
             headSHAScanner.close();
         }
     }
@@ -108,8 +108,8 @@ public class ReferenceDir {
 
     public void setHead(String branch, String headCommit) throws IOException {
         if (!heads.containsKey(branch)) {
-            throw new RuntimeException("Setting " +
-                    "the head of a non-existent branch.");
+            throw new RuntimeException("Setting "
+                   + "the head of a non-existent branch.");
         }
         heads.put(branch, headCommit);
         File newHead = Utils.join(refDir, branch);
